@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" data-root="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STARQUAKE ARCADE</title>
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/home.css" />
+  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script defer src="assets/js/firebase-config.js"></script>
+  <script defer src="assets/js/db.js"></script>
+  <script defer src="assets/js/app.js"></script>
+</head>
+<body>
+  <nav id="site-nav" class="site-nav" data-active="home" aria-label="주 메뉴"></nav>
+
+  <main class="page page--center">
+    <p class="home-handle"><a href="pages/write.html" id="home-handle">@ST4RQUADE</a></p>
+    <h1 class="home-title" id="home-title">STARQUAKE<br />ARCADE</h1>
+    <div class="home-image" id="home-image">
+      <span class="home-image__placeholder">IMAGE DISPLAY</span>
+    </div>
+    <p class="home-desc" id="home-desc">텍스트 텍스트 텍스트 텍스트 텍스트 텍스트 텍스트 텍스트 텍스트 텍스트 텍스트</p>
+  </main>
+
+  <button type="button" class="scroll-top" id="scroll-top" aria-label="맨 위로">^</button>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    SQApp.loadData("data/site.json", "site").then(function (data) {
+      if (!data) return;
+      document.getElementById("home-handle").textContent = data.handle || "";
+      var title = data.title || ["STARQUAKE", "ARCADE"];
+      document.getElementById("home-title").innerHTML = SQApp.esc(title[0]) + "<br />" + SQApp.esc(title[1] || "");
+      document.getElementById("home-desc").textContent = data.description || "";
+      var box = document.getElementById("home-image");
+      if (data.image) {
+        box.innerHTML = '<img src="' + SQApp.esc(data.image) + '" alt="" />';
+      }
+    });
+  });
+  </script>
+</body>
+</html>
