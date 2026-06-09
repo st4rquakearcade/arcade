@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko" data-root="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>글쓰기 — STARQUAKE ARCADE</title>
+
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="stylesheet" href="assets/css/layout.css" />
+    <link rel="stylesheet" href="assets/css/write.css" />
+
+    <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script defer src="assets/js/firebase-config.js"></script>
+    <script defer src="assets/js/db.js"></script>
+    <script defer src="assets/js/store.js"></script>
+    <script defer src="assets/js/theme.js"></script>
+    <script defer src="assets/js/app.js"></script>
+    <script defer src="assets/js/imgcompress.js"></script>
+    <script defer src="assets/js/write.js"></script>
+  </head>
+  <body>
+    <div id="loader"><span class="dot"></span></div>
+    <nav id="site-nav" class="site-nav" aria-label="주 메뉴"></nav>
+
+    <main class="shell">
+      <div class="editor-wrap">
+        <div class="page-head">
+          <h1>글쓰기</h1>
+          <p class="desc muted">서식을 자유롭게 쓰고, 미리보기·임시저장이 됩니다.</p>
+        </div>
+
+        <!-- 글 정보 -->
+        <div class="editor-top">
+          <div class="row3">
+            <select id="ed-board" aria-label="게시판"></select>
+            <input id="ed-title" type="text" placeholder="제목" />
+            <input id="ed-author" type="text" placeholder="작성자 (선택)" />
+          </div>
+          <input id="ed-tags" type="text" placeholder="태그 (쉼표로 구분: 일상, 메모)" />
+        </div>
+
+        <!-- 툴바 -->
+        <div class="toolbar" role="toolbar" aria-label="서식 도구">
+          <div class="grp">
+            <button class="tb" type="button" data-cmd="undo" title="실행취소">↺</button>
+            <button class="tb" type="button" data-cmd="redo" title="다시실행">↻</button>
+          </div>
+          <div class="grp">
+            <select class="tb" id="tb-format" title="문단 형식" aria-label="문단 형식">
+              <option value="">문단</option>
+              <option value="p">본문</option>
+              <option value="h1">제목 1</option>
+              <option value="h2">제목 2</option>
+              <option value="h3">제목 3</option>
+              <option value="blockquote">인용</option>
+              <option value="pre">코드블록</option>
+            </select>
+            <select class="tb" id="tb-size" title="글자 크기" aria-label="글자 크기">
+              <option value="">크기</option>
+              <option value="2">작게</option>
+              <option value="3">보통</option>
+              <option value="5">크게</option>
+              <option value="6">아주 크게</option>
+            </select>
+          </div>
+          <div class="grp">
+            <button class="tb" type="button" data-cmd="bold" title="굵게"><b>B</b></button>
+            <button class="tb" type="button" data-cmd="italic" title="기울임"><i>I</i></button>
+            <button class="tb" type="button" data-cmd="underline" title="밑줄"><u>U</u></button>
+            <button class="tb" type="button" data-cmd="strikeThrough" title="취소선"><s>S</s></button>
+            <span class="tb" title="글자색">A<input type="color" id="tb-fore" value="#e6e6ea" /></span>
+            <span class="tb" title="형광펜">H<input type="color" id="tb-back" value="#444444" /></span>
+          </div>
+          <div class="grp">
+            <button class="tb" type="button" data-cmd="justifyLeft" title="왼쪽 정렬">⇤</button>
+            <button class="tb" type="button" data-cmd="justifyCenter" title="가운데 정렬">↔</button>
+            <button class="tb" type="button" data-cmd="justifyRight" title="오른쪽 정렬">⇥</button>
+            <button class="tb" type="button" data-cmd="justifyFull" title="양쪽 정렬">≡</button>
+          </div>
+          <div class="grp">
+            <button class="tb" type="button" data-cmd="insertUnorderedList" title="글머리 목록">•≣</button>
+            <button class="tb" type="button" data-cmd="insertOrderedList" title="번호 목록">1.≣</button>
+            <button class="tb" type="button" data-cmd="outdent" title="내어쓰기">⇤|</button>
+            <button class="tb" type="button" data-cmd="indent" title="들여쓰기">|⇥</button>
+          </div>
+          <div class="grp">
+            <button class="tb" type="button" id="tb-link" title="링크">🔗</button>
+            <button class="tb" type="button" id="tb-image" title="이미지">🖼</button>
+            <button class="tb" type="button" id="tb-table" title="표">▦</button>
+            <button class="tb" type="button" data-cmd="insertHorizontalRule" title="구분선">―</button>
+          </div>
+          <div class="grp">
+            <button class="tb" type="button" id="tb-clear" title="서식 지우기">✕</button>
+            <button class="tb" type="button" id="tb-source" title="HTML 소스 편집">&lt;/&gt;</button>
+          </div>
+        </div>
+
+        <!-- 본문 -->
+        <div
+          id="editor-body"
+          class="editor-body"
+          contenteditable="true"
+          data-placeholder="여기에 내용을 작성하세요…"
+        ></div>
+        <textarea id="editor-source" class="editor-source" style="display: none"></textarea>
+        <div id="preview" class="preview article-body" style="display: none"></div>
+
+        <!-- 옵션 -->
+        <div class="editor-options">
+          <label><input type="checkbox" id="ed-pinned" /> 📌 고정글</label>
+          <label><input type="checkbox" id="ed-secret" /> 🔒 비밀글</label>
+          <span class="row" id="pw-wrap" style="display: none">
+            <input type="password" id="ed-password" placeholder="비밀번호" />
+          </span>
+        </div>
+
+        <!-- 동작 -->
+        <div class="editor-actions">
+          <span class="save-status" id="save-status"></span>
+          <div class="right">
+            <button class="btn btn--danger" type="button" id="btn-delete" style="display: none">삭제</button>
+            <button class="btn btn--ghost" type="button" id="btn-preview">미리보기</button>
+            <button class="btn btn--primary" type="button" id="btn-save">저장</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

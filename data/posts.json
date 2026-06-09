@@ -1,0 +1,52 @@
+[
+  {
+    "id": "seed-notice-1",
+    "board": "notice",
+    "title": "ARCADE에 오신 것을 환영합니다",
+    "html": "<p>이곳은 <b>STARQUAKE ARCADE</b> 홈페이지입니다.</p><p>스킨 에디터에서 테마와 게시판을 자유롭게 바꿀 수 있어요.</p>",
+    "tags": ["환영", "안내"],
+    "pinned": true,
+    "secret": false,
+    "author": "주인",
+    "createdAt": 1717900000000,
+    "updatedAt": 1717900000000
+  },
+  {
+    "id": "seed-free-1",
+    "board": "free",
+    "title": "첫 자유글",
+    "html": "<p>자유 게시판의 첫 글입니다. 카드 스택 UI로 넘겨 보세요.</p>",
+    "tags": ["테스트"],
+    "pinned": false,
+    "secret": false,
+    "author": "방문자",
+    "createdAt": 1717800000000,
+    "updatedAt": 1717800000000
+  },
+  {
+    "id": "seed-memo-1",
+    "board": "memo",
+    "title": "",
+    "html": "<p>오늘의 메모: GSAP 스냅 스크롤 좋다.</p>",
+    "tags": [],
+    "pinned": false,
+    "secret": false,
+    "author": "주인",
+    "createdAt": 1717850000000,
+    "updatedAt": 1717850000000
+  },
+  {
+    "id": "seed-banner-1",
+    "board": "banner",
+    "title": "GitHub",
+    "html": "<p>소스 저장소</p>",
+    "link": "https://github.com",
+    "image": "",
+    "tags": [],
+    "pinned": false,
+    "secret": false,
+    "author": "주인",
+    "createdAt": 1717700000000,
+    "updatedAt": 1717700000000
+  }
+]

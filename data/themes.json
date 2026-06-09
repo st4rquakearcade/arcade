@@ -1,0 +1,58 @@
+{
+  "graphite": {
+    "name": "그래파이트",
+    "mode": "dark",
+    "vars": {
+      "--bg": "#1c1c1e",
+      "--surface": "#26262a",
+      "--surface-2": "#303036",
+      "--line": "#3a3a40",
+      "--text": "#e6e6ea",
+      "--text-dim": "#9a9aa2",
+      "--accent": "#c9c9d0",
+      "--shadow": "0 12px 40px rgba(0,0,0,.45)"
+    }
+  },
+  "paper": {
+    "name": "페이퍼",
+    "mode": "light",
+    "vars": {
+      "--bg": "#ececec",
+      "--surface": "#f7f7f7",
+      "--surface-2": "#ffffff",
+      "--line": "#d4d4d6",
+      "--text": "#2a2a2c",
+      "--text-dim": "#6c6c70",
+      "--accent": "#4a4a50",
+      "--shadow": "0 12px 40px rgba(0,0,0,.12)"
+    }
+  },
+  "fog": {
+    "name": "포그",
+    "mode": "light",
+    "vars": {
+      "--bg": "#d6d6d9",
+      "--surface": "#e6e6e9",
+      "--surface-2": "#f2f2f4",
+      "--line": "#bcbcc0",
+      "--text": "#33333a",
+      "--text-dim": "#70707a",
+      "--accent": "#55555e",
+      "--shadow": "0 12px 40px rgba(0,0,0,.14)"
+    }
+  },
+  "noir": {
+    "name": "느와르",
+    "mode": "dark",
+    "vars": {
+      "--bg": "#161618",
+      "--surface": "#202024",
+      "--surface-2": "#2a2a30",
+      "--line": "#33333a",
+      "--text": "#dcdce2",
+      "--text-dim": "#8a8a92",
+      "--accent": "#b6b6be",
+      "--shadow": "0 14px 44px rgba(0,0,0,.55)"
+    }
+  }
+}

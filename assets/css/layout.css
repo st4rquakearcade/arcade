@@ -1,0 +1,169 @@
+/* =====================================================================
+ * layout.css — 내비게이션 · 페이지 셸 · 로더 · 카드 공통
+ * ===================================================================== */
+
+/* ---------- 로더 ---------- */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  transition: opacity 0.5s var(--ease), visibility 0.5s var(--ease);
+}
+#loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+}
+#loader .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  animation: loaderPulse 1s var(--ease) infinite;
+}
+@keyframes loaderPulse {
+  0%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---------- 내비게이션 ---------- */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-2);
+  padding: 0 var(--gap-3);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-links {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar {
+  display: none;
+}
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  padding: 7px 12px;
+  border-radius: var(--r-1);
+  font-size: 0.86rem;
+  color: var(--text-dim);
+  transition: color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.site-nav a:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+.site-nav a.is-active {
+  color: var(--text);
+  background: var(--surface);
+}
+.nav-ico {
+  font-size: 0.82em;
+  opacity: 0.7;
+}
+.nav-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-1);
+  flex-shrink: 0;
+}
+.nav-tools a {
+  font-size: 0.8rem;
+}
+.nav-lock {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-1);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.nav-lock:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+body.is-owner .nav-lock {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+/* ---------- 페이지 셸 ---------- */
+.shell {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--gap-5) var(--gap-3);
+}
+.page-head {
+  margin-bottom: var(--gap-4);
+}
+.page-head h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+}
+.page-head .desc {
+  color: var(--text-dim);
+}
+
+/* ---------- 카드 공통 ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: var(--gap-3);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.card:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+}
+
+/* ---------- 맨 위로 ---------- */
+.scroll-top {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 60;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.scroll-top.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ---------- 빈 상태 ---------- */
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  padding: var(--gap-5) 0;
+}

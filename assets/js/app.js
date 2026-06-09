@@ -1,18 +1,15 @@
-(function () {
+/* =====================================================================
+ * app.js — 모든 페이지 공통 부트스트랩
+ * ---------------------------------------------------------------------
+ *  · 테마 적용
+ *  · 게시판 목록으로 내비게이션 자동 생성
+ *  · "주인 모드"(PIN) : 잠금 해제하면 글쓰기/편집/스킨 버튼이 보입니다.
+ *  · 맨 위로 버튼, 펼침(fold) 토글
+ *  주인 모드는 화면 잠금일 뿐 진짜 보안이 아닙니다.
+ *  실제 보안은 Firebase 규칙으로 합니다(docs/FIREBASE.md 참고).
+ * ===================================================================== */
+(function (global) {
   "use strict";
-
-  var NAV = [
-    { id: "home", label: "HOME", href: "index.html" },
-    { id: "notice", label: "NOTICE", href: "pages/notice.html" },
-    { id: "profile", label: "PROFILE", href: "pages/profile.html" },
-    { id: "pair", label: "PAIR", href: "pages/pair.html" },
-    { id: "log", label: "LOG", href: "pages/log.html" },
-    { id: "memo", label: "MEMO", href: "pages/memo.html" },
-    { id: "calendar", label: "CALANDAR", href: "pages/calendar.html" },
-    { id: "archive", label: "ARCHIVE", href: "pages/archive.html" },
-    { id: "guest", label: "GUEST", href: "pages/guest.html" },
-    { id: "banner", label: "BANNER", href: "pages/banner.html" }
-  ];
 
   var root = document.documentElement.getAttribute("data-root") || "";
 
@@ -22,22 +19,89 @@
     });
   }
 
-  function injectNav() {
-    var mount = document.getElementById("site-nav");
-    if (!mount) return;
-    var active = mount.getAttribute("data-active") || "";
-    mount.innerHTML = NAV.map(function (item) {
-      var href = root + item.href;
-      var cls = item.id === active ? ' class="is-active"' : "";
-      return '<a href="' + esc(href) + '"' + cls + ">" + esc(item.label) + "</a>";
-    }).join("");
+  /* ---------- 주인 모드 ---------- */
+  function isOwner() {
+    try {
+      return sessionStorage.getItem("sq:owner") === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+  function setOwner(on) {
+    try {
+      if (on) sessionStorage.setItem("sq:owner", "1");
+      else sessionStorage.removeItem("sq:owner");
+    } catch (e) {}
+    document.body.classList.toggle("is-owner", !!on);
+  }
+  function toggleOwner() {
+    if (isOwner()) {
+      setOwner(false);
+      return;
+    }
+    SQStore.getSite().then(function (site) {
+      var pin = (site.owner && site.owner.pin) || "";
+      if (!pin) {
+        setOwner(true); // PIN 미설정이면 바로 주인 모드
+        return;
+      }
+      var input = window.prompt("주인 PIN을 입력하세요");
+      if (input == null) return;
+      if (input === String(pin)) setOwner(true);
+      else window.alert("PIN이 일치하지 않습니다.");
+    });
   }
 
+  /* ---------- 내비게이션 ---------- */
+  function buildNav(active) {
+    var mount = document.getElementById("site-nav");
+    if (!mount) return Promise.resolve();
+    return SQStore.getBoards().then(function (boards) {
+      var links = boards
+        .map(function (b) {
+          var href =
+            b.id === "home"
+              ? root + "index.html"
+              : root + "board.html?board=" + encodeURIComponent(b.id);
+          var cls = b.id === active ? ' class="is-active"' : "";
+          return (
+            '<a href="' +
+            esc(href) +
+            '"' +
+            cls +
+            "><span class=\"nav-ico\">" +
+            esc(b.icon || "·") +
+            "</span>" +
+            esc(b.name) +
+            "</a>"
+          );
+        })
+        .join("");
+
+      var tools =
+        '<span class="nav-tools">' +
+        '<a class="owner-only" href="' +
+        root +
+        'write.html">＋ 글쓰기</a>' +
+        '<a class="owner-only" href="' +
+        root +
+        'editor.html">⚙ 스킨</a>' +
+        '<button type="button" id="owner-toggle" class="nav-lock" title="주인 모드">⌥</button>' +
+        "</span>";
+
+      mount.innerHTML = '<div class="nav-links">' + links + "</div>" + tools;
+
+      var lock = document.getElementById("owner-toggle");
+      if (lock) lock.addEventListener("click", toggleOwner);
+    });
+  }
+
+  /* ---------- 공통 UI ---------- */
   function initScrollTop() {
     var btn = document.getElementById("scroll-top");
     if (!btn) return;
     function toggle() {
-      btn.classList.toggle("is-visible", window.scrollY > 200);
+      btn.classList.toggle("is-visible", window.scrollY > 240);
     }
     window.addEventListener("scroll", toggle, { passive: true });
     toggle();
@@ -46,52 +110,38 @@
     });
   }
 
-  function initFold() {
-    document.querySelectorAll("[data-fold]").forEach(function (el) {
-      var trigger = el.querySelector("[data-fold-trigger]");
-      if (!trigger) return;
-      trigger.addEventListener("click", function () {
-        el.classList.toggle("is-open");
-      });
+  function hideLoader() {
+    var l = document.getElementById("loader");
+    if (l) setTimeout(function () {
+      l.classList.add("is-done");
+    }, 200);
+  }
+
+  function boot() {
+    setOwner(isOwner());
+    var active =
+      (document.getElementById("site-nav") &&
+        document.getElementById("site-nav").getAttribute("data-active")) ||
+      "";
+    var p = global.SQTheme ? SQTheme.init() : Promise.resolve();
+    p.then(function () {
+      return buildNav(active);
+    }).then(function () {
+      initScrollTop();
+      hideLoader();
     });
   }
 
-  function fetchJson(path) {
-    return fetch(root + path, { cache: "no-store" })
-      .then(function (r) {
-        return r.ok ? r.json() : null;
-      })
-      .catch(function () {
-        return null;
-      });
-  }
-
-  function loadData(jsonPath, fbNode) {
-    if (window.SQDb && SQDb.ready()) {
-      return SQDb.fetch(fbNode).then(function (val) {
-        if (val != null) return val;
-        return fetchJson(jsonPath);
-      });
-    }
-    return fetchJson(jsonPath);
-  }
-
-  window.SQApp = {
+  global.SQApp = {
     esc: esc,
     root: root,
-    loadData: loadData,
-    fetchJson: fetchJson
+    isOwner: isOwner,
+    setOwner: setOwner
   };
-
-  function boot() {
-    injectNav();
-    initScrollTop();
-    initFold();
-  }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot);
   } else {
     boot();
   }
-})();
+})(window);

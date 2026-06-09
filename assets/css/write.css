@@ -1,0 +1,182 @@
+/* =====================================================================
+ * write.css — 글쓰기 에디터
+ * ===================================================================== */
+.editor-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+}
+.editor-top {
+  display: grid;
+  gap: var(--gap-2);
+  margin-bottom: var(--gap-3);
+}
+.editor-top .row3 {
+  display: grid;
+  grid-template-columns: 160px 1fr 1fr;
+  gap: var(--gap-2);
+}
+@media (max-width: 640px) {
+  .editor-top .row3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 툴바 */
+.toolbar {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-1) var(--r-1) 0 0;
+  border-bottom: none;
+}
+.toolbar .grp {
+  display: flex;
+  gap: 2px;
+  padding-right: 6px;
+  margin-right: 3px;
+  border-right: 1px solid var(--line);
+}
+.toolbar .grp:last-child {
+  border-right: none;
+}
+.tb {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-1);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.tb:hover {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+.tb.is-on {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+.tb select {
+  width: auto;
+  padding: 4px 6px;
+  background: transparent;
+  border: none;
+}
+.tb input[type="color"] {
+  width: 26px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* 본문 편집 영역 */
+.editor-body {
+  min-height: 360px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0 0 var(--r-1) var(--r-1);
+  padding: var(--gap-3);
+  line-height: 1.8;
+  outline: none;
+}
+.editor-body:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-dim);
+}
+.editor-body img {
+  border-radius: var(--r-1);
+}
+.editor-body blockquote {
+  border-left: 3px solid var(--line);
+  margin: 1em 0;
+  padding: 0.2em 1em;
+  color: var(--text-dim);
+}
+.editor-body pre {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  padding: 12px;
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+}
+.editor-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+.editor-body td,
+.editor-body th {
+  border: 1px solid var(--line);
+  padding: 8px;
+}
+
+/* 소스 편집 */
+.editor-source {
+  width: 100%;
+  min-height: 360px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  border-radius: 0 0 var(--r-1) var(--r-1);
+}
+
+/* 미리보기 */
+.preview {
+  border: 1px dashed var(--line);
+  border-radius: var(--r-1);
+  padding: var(--gap-3);
+  margin-top: var(--gap-2);
+}
+
+/* 옵션 줄 */
+.editor-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-3);
+  align-items: center;
+  margin: var(--gap-3) 0;
+  padding: var(--gap-2) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.editor-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text);
+  cursor: pointer;
+}
+.editor-options input[type="checkbox"] {
+  width: auto;
+}
+.editor-options input[type="password"] {
+  width: 140px;
+}
+.editor-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap-2);
+  flex-wrap: wrap;
+}
+.editor-actions .right {
+  display: flex;
+  gap: var(--gap-1);
+}
+.save-status {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}

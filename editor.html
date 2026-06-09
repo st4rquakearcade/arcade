@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko" data-root="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>스킨 에디터 — STARQUAKE ARCADE</title>
+
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="stylesheet" href="assets/css/layout.css" />
+    <link rel="stylesheet" href="assets/css/skin.css" />
+
+    <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script defer src="assets/js/firebase-config.js"></script>
+    <script defer src="assets/js/db.js"></script>
+    <script defer src="assets/js/store.js"></script>
+    <script defer src="assets/js/theme.js"></script>
+    <script defer src="assets/js/app.js"></script>
+    <script defer src="assets/js/skin.js"></script>
+  </head>
+  <body>
+    <div id="loader"><span class="dot"></span></div>
+    <nav id="site-nav" class="site-nav" aria-label="주 메뉴"></nav>
+
+    <main class="shell">
+      <div class="page-head">
+        <h1>스킨 에디터</h1>
+        <p class="desc muted">사이트 모양과 게시판을 코딩 없이 바꿉니다. 변경 후 아래 <b>저장</b>을 누르세요.</p>
+      </div>
+
+      <div class="note">
+        화면 미리보기는 즉시 반영되지만, 영구 저장은 <b>저장</b> 버튼을 눌러야 합니다.
+        Firebase를 연결하면 모든 기기에 공유됩니다(docs/FIREBASE.md 참고).
+      </div>
+
+      <div class="skin-tabs">
+        <button data-tab="site" class="is-on">사이트</button>
+        <button data-tab="theme">테마</button>
+        <button data-tab="board">게시판</button>
+        <button data-tab="backup">백업</button>
+      </div>
+
+      <!-- 1) 사이트 -->
+      <section id="panel-site" class="skin-panel is-on">
+        <div class="field-grid">
+          <div class="field">
+            <label>제목 ( / 로 줄바꿈)</label>
+            <input id="s-title" type="text" placeholder="STARQUAKE / ARCADE" />
+          </div>
+          <div class="field">
+            <label>핸들</label>
+            <input id="s-handle" type="text" placeholder="@ST4RQUAKE" />
+          </div>
+        </div>
+        <div class="field">
+          <label>소개글</label>
+          <textarea id="s-desc"></textarea>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label>대표 이미지 URL</label>
+            <input id="s-image" type="url" placeholder="https://..." />
+          </div>
+          <div class="field">
+            <label>푸터 문구</label>
+            <input id="s-footer" type="text" />
+          </div>
+        </div>
+        <div class="field" style="max-width: 240px">
+          <label>주인 PIN (글쓰기/스킨 잠금)</label>
+          <input id="s-pin" type="text" placeholder="예: 0000" />
+        </div>
+      </section>
+
+      <!-- 2) 테마 -->
+      <section id="panel-theme" class="skin-panel">
+        <p class="muted">프리셋을 고르면 미리보기에 즉시 적용됩니다. 색을 직접 바꿔 나만의 프리셋으로 저장하세요.</p>
+        <div id="theme-grid" class="theme-grid"></div>
+
+        <div class="row spread" style="margin-bottom: 10px">
+          <label style="margin: 0">밝기 모드
+            <select id="theme-mode" style="width: auto; display: inline-block; margin-left: 8px">
+              <option value="dark">어두움</option>
+              <option value="light">밝음</option>
+            </select>
+          </label>
+          <span class="row">
+            <button class="btn btn--sm" id="set-site-theme" type="button">기본 테마로 지정</button>
+            <button class="btn btn--sm btn--danger" id="del-theme" type="button" style="display: none">프리셋 삭제</button>
+          </span>
+        </div>
+
+        <div id="var-editor"></div>
+        <div style="margin-top: var(--gap-2)">
+          <button class="btn btn--primary btn--sm" id="save-theme" type="button">＋ 커스텀 프리셋으로 저장</button>
+        </div>
+      </section>
+
+      <!-- 3) 게시판 -->
+      <section id="panel-board" class="skin-panel">
+        <p class="muted">순서·이름·종류를 바꾸고, <b>⬇HTML</b>로 게시판 전용 파일을 내려받을 수 있습니다.</p>
+        <div id="board-list"></div>
+
+        <div class="add-board">
+          <strong>새 게시판 추가</strong>
+          <div class="field-grid" style="margin-top: 8px">
+            <input id="nb-name" type="text" placeholder="이름 (예: 사진)" />
+            <input id="nb-id" type="text" placeholder="영문 id (예: photo)" />
+          </div>
+          <div class="field-grid" style="margin-top: 8px">
+            <select id="nb-type"></select>
+            <input id="nb-icon" type="text" placeholder="아이콘 (예: ◆)" />
+          </div>
+          <label class="row" style="margin: 8px 0">
+            <input type="checkbox" id="nb-owner" style="width: auto" /> 주인만 글쓰기
+          </label>
+          <button class="btn btn--primary" id="add-board" type="button">＋ 추가하고 HTML 생성</button>
+        </div>
+      </section>
+
+      <!-- 4) 백업 -->
+      <section id="panel-backup" class="skin-panel">
+        <p class="muted">사이트 설정·게시판·커스텀 테마를 하나의 JSON으로 저장/복원합니다. 다른 사이트로 옮길 때 유용합니다.</p>
+        <div class="row">
+          <button class="btn" id="export-all" type="button">⬇ 프리셋 내보내기</button>
+          <button class="btn" id="import-all" type="button">⬆ 프리셋 가져오기</button>
+        </div>
+      </section>
+
+      <!-- 하단 고정 저장 바 -->
+      <div class="skin-foot">
+        <span class="muted" id="skin-status"></span>
+        <button class="btn btn--primary" id="btn-save-all" type="button">저장</button>
+      </div>
+    </main>
+  </body>
+</html>
