@@ -20,12 +20,18 @@
 
   var SESSION_KEY = "sq:auth";
 
+  // 계정으로 부여 가능한 등급(가입/등급변경 대상)
   var ROLES = ["superadmin", "subadmin", "member"];
+  // visitor 는 "비로그인 상태"를 뜻하는 가상 등급(계정으로 부여하지 않음)
   var ROLE_LABEL = {
     superadmin: "최고 관리자",
     subadmin: "부관리자",
-    member: "회원"
+    member: "회원",
+    visitor: "방문자"
   };
+
+  // 모든 로그인 사용자가 공통으로 가지는 권한
+  var COMMON = ["viewPublic", "writeGuest"];
 
   var PERMS = {
     superadmin: [
@@ -39,8 +45,9 @@
       "secret",
       "writeMember",
       "editOwn",
-      "deleteOwn"
-    ],
+      "deleteOwn",
+      "viewMembersOnly"
+    ].concat(COMMON),
     subadmin: [
       "manageBoards",
       "writeAny",
@@ -50,9 +57,14 @@
       "secret",
       "writeMember",
       "editOwn",
-      "deleteOwn"
-    ],
-    member: ["writeMember", "editOwn", "deleteOwn", "secret"]
+      "deleteOwn",
+      "viewMembersOnly"
+    ].concat(COMMON),
+    member: ["writeMember", "editOwn", "deleteOwn", "secret", "viewMembersOnly"].concat(
+      COMMON
+    ),
+    // 방문자(비로그인): 공개 글 열람 + 방명록 작성만
+    visitor: COMMON.slice()
   };
 
   /* ---------- 비밀번호 해시 ---------- */
@@ -107,12 +119,18 @@
   function role() {
     return _current ? _current.role : null;
   }
+  // 권한 판정용 등급 — 비로그인이면 'visitor'
+  function effectiveRole() {
+    return _current ? _current.role : "visitor";
+  }
   function isLoggedIn() {
     return !!_current;
   }
+  function isVisitor() {
+    return !_current;
+  }
   function hasPerm(perm) {
-    if (!_current) return false;
-    var list = PERMS[_current.role] || [];
+    var list = PERMS[effectiveRole()] || [];
     return list.indexOf(perm) !== -1;
   }
   function isAdmin() {
@@ -255,7 +273,9 @@
     PERMS: PERMS,
     current: current,
     role: role,
+    effectiveRole: effectiveRole,
     isLoggedIn: isLoggedIn,
+    isVisitor: isVisitor,
     isAdmin: isAdmin,
     hasPerm: hasPerm,
     register: register,

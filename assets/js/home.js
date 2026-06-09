@@ -53,8 +53,11 @@
   }
 
   function boardPanel(board, posts) {
-    var rows =
-      posts.length === 0
+    // 회원 전용 게시판은 방문자에게 글 목록을 숨긴다
+    var locked = board.membersOnly && !SQAuth.hasPerm("viewMembersOnly");
+    var rows = locked
+      ? '<li><a class="muted">🔒 회원 전용 게시판입니다.</a></li>'
+      : posts.length === 0
         ? '<li><a class="muted">아직 글이 없습니다.</a></li>'
         : posts
             .map(function (p) {

@@ -111,8 +111,9 @@
             <select id="nb-type"></select>
             <input id="nb-icon" type="text" placeholder="아이콘 (예: ◆)" />
           </div>
-          <label class="row" style="margin: 8px 0">
-            <input type="checkbox" id="nb-owner" style="width: auto" /> 주인만 글쓰기
+          <label class="row" style="margin: 8px 0; gap: 16px">
+            <span class="row" style="margin: 0"><input type="checkbox" id="nb-owner" style="width: auto" /> 주인만 글쓰기</span>
+            <span class="row" style="margin: 0"><input type="checkbox" id="nb-members" style="width: auto" /> 회원만 열람</span>
           </label>
           <button class="btn btn--primary" id="add-board" type="button">＋ 추가하고 HTML 생성</button>
         </div>
@@ -124,7 +125,8 @@
         <div class="note">
           등급별 권한 — <b>최고 관리자</b>: 모든 권한(회원·사이트·게시판·글) ·
           <b>부관리자</b>: 게시판·모든 글 관리(회원/사이트 제외) ·
-          <b>회원</b>: 본인 글 작성·수정·삭제
+          <b>회원</b>: 본인 글 작성·수정·삭제 ·
+          <b>방문자</b>(비로그인): 공개 게시판 열람·방명록 작성
         </div>
         <div id="user-list"></div>
       </section>

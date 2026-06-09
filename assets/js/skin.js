@@ -268,9 +268,12 @@
             .join("") +
           "</select>" +
           '<div class="ops">' +
-          '<label class="muted" style="display:flex;align-items:center;gap:3px;font-size:.7rem"><input type="checkbox" data-f="ownerOnly" style="width:auto"' +
+          '<label class="muted" style="display:flex;align-items:center;gap:3px;font-size:.7rem" title="주인/관리자만 글쓰기"><input type="checkbox" data-f="ownerOnly" style="width:auto"' +
           (b.ownerOnly ? " checked" : "") +
           ">주인만</label>" +
+          '<label class="muted" style="display:flex;align-items:center;gap:3px;font-size:.7rem" title="비로그인 방문자는 열람 불가"><input type="checkbox" data-f="membersOnly" style="width:auto"' +
+          (b.membersOnly ? " checked" : "") +
+          ">회원전용</label>" +
           '<button class="btn btn--sm" type="button" data-up>↑</button>' +
           '<button class="btn btn--sm" type="button" data-down>↓</button>' +
           '<button class="btn btn--sm" type="button" data-gen title="전용 HTML 파일 생성">⬇HTML</button>' +
@@ -349,6 +352,7 @@
       icon: $("nb-icon").value.trim() || "·",
       desc: "",
       ownerOnly: $("nb-owner").checked,
+      membersOnly: $("nb-members").checked,
       order: state.boards.length
     };
     state.boards.push(board);

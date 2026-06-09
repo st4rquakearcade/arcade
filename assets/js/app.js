@@ -31,6 +31,7 @@
     b.classList.toggle("is-auth", !!loggedIn);
     b.classList.toggle("is-admin", auth() ? SQAuth.isAdmin() : false);
     b.classList.toggle("is-owner", hasPerm("manageSite")); // 기존 owner-only 호환
+    b.classList.toggle("role-visitor", !loggedIn);
     ["superadmin", "subadmin", "member"].forEach(function (r) {
       b.classList.toggle("role-" + r, loggedIn && SQAuth.role() === r);
     });

@@ -193,8 +193,9 @@
   }
 
   function renderGuest(board, posts) {
-    var form =
-      '<form class="guest-form card" id="guest-form">' +
+    var form = !SQAuth.hasPerm("writeGuest")
+      ? ""
+      : '<form class="guest-form card" id="guest-form">' +
       '<div class="row"><input type="text" id="g-name" placeholder="이름 (선택)" style="max-width:200px" /></div>' +
       '<textarea id="g-msg" placeholder="인사를 남겨주세요" required></textarea>' +
       '<label class="row" style="margin:0"><input type="checkbox" id="g-secret" style="width:auto" /> 비밀로 남기기</label>' +
@@ -392,6 +393,24 @@
       return;
     }
     document.title = board.name + " — STARQUAKE ARCADE";
+
+    // 회원 전용 게시판은 비로그인 방문자에게 잠금
+    if (board.membersOnly && !SQAuth.hasPerm("viewMembersOnly")) {
+      mount.innerHTML =
+        '<div class="board-head"><div><p class="label">' +
+        esc((board.id || "").toUpperCase()) +
+        '</p><h1>' +
+        esc(board.name) +
+        '</h1></div></div>' +
+        '<div class="empty">🔒 회원 전용 게시판입니다.<br><br>' +
+        '<a class="btn" href="' +
+        root +
+        "account.html?next=" +
+        encodeURIComponent(location.pathname + location.search) +
+        '">로그인 하기</a></div>';
+      return;
+    }
+
     if (postId) {
       SQStore.getPost(postId).then(function (p) {
         renderView(board, p);
