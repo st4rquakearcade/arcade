@@ -72,11 +72,23 @@
 }
 .site-nav a:hover {
   color: var(--text);
-  background: var(--surface);
 }
 .site-nav a.is-active {
-  color: var(--accent);
-  background: var(--surface);
+  position: relative;
+  color: var(--text);
+  font-weight: 600;
+}
+/* 레퍼런스처럼 활성 메뉴 아래 작은 점 */
+.site-nav a.is-active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text);
+  transform: translateX(-50%);
 }
 .nav-user {
   font-weight: 600;

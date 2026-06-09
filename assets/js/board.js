@@ -65,10 +65,7 @@
       esc((board.id || "").toUpperCase()) +
       "</p><h1>" +
       esc(board.name) +
-      "</h1>" +
-      '<p class="muted">' +
-      esc(board.desc || "") +
-      "</p></div>" +
+      "</h1></div>" +
       (canWrite(board)
         ? '<a class="btn btn--primary" href="' +
           root +

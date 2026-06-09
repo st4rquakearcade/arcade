@@ -86,7 +86,7 @@
       return Promise.resolve();
     }
     return SQStore.getSite().then(function (site) {
-      return apply(pref || (site && site.theme) || "editorial").then(function () {
+      return apply(pref || (site && site.theme) || "cosmos").then(function () {
         // 사이트에 따로 지정한 폰트가 있으면 프리셋 폰트를 덮어쓴다
         var f = site && site.fonts;
         if (f && global.SQFont) {

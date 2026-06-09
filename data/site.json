@@ -3,7 +3,7 @@
   "handle": "@ST4RQUAKE",
   "description": "정적 HTML · CSS · GSAP 기반 개인 홈페이지. JSON만 고치면 내용이 바뀝니다.",
   "image": "",
-  "theme": "editorial",
+  "theme": "cosmos",
   "fonts": { "display": "", "body": "" },
   "footer": "© STARQUAKE ARCADE",
   "owner": {

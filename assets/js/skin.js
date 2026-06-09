@@ -19,7 +19,7 @@
     site: null,
     boards: [],
     themes: {}, // 빌트인 + 커스텀
-    currentTheme: "graphite",
+    currentTheme: "cosmos",
     draftVars: {} // 색 편집 작업본
   };
 
@@ -251,7 +251,7 @@
       delete custom[id];
       SQStore.saveCustomThemes(custom).then(function () {
         SQStore.flush("themes_custom");
-        reloadThemes("graphite");
+        reloadThemes("cosmos");
       });
     });
   }

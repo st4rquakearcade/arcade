@@ -93,9 +93,6 @@
       "<h2>" +
       esc(board.name) +
       "</h2>" +
-      '<p class="muted">' +
-      esc(board.desc || "") +
-      "</p>" +
       '<ul class="preview-list">' +
       rows +
       "</ul>" +

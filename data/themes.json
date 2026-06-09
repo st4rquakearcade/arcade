@@ -1,4 +1,27 @@
 {
+  "cosmos": {
+    "name": "코스모스 미니멀",
+    "mode": "light",
+    "googleFonts": ["Inter:wght@400;500;600;700"],
+    "vars": {
+      "--bg": "#f2f1ed",
+      "--surface": "#fbfbfa",
+      "--surface-2": "#ffffff",
+      "--line": "#e5e4df",
+      "--text": "#1c1c1c",
+      "--text-dim": "#a3a29c",
+      "--accent": "#161616",
+      "--on-accent": "#ffffff",
+      "--shadow": "0 12px 36px rgba(30,28,22,.07)",
+      "--font-display": "'Inter', system-ui, sans-serif",
+      "--font-body": "'Inter', system-ui, sans-serif",
+      "--r-1": "12px",
+      "--r-2": "18px",
+      "--r-3": "26px",
+      "--r-btn": "999px",
+      "--border-w": "1px"
+    }
+  },
   "editorial": {
     "name": "에디토리얼",
     "mode": "light",
@@ -18,6 +41,7 @@
       "--r-1": "4px",
       "--r-2": "7px",
       "--r-3": "12px",
+      "--r-btn": "4px",
       "--border-w": "1px"
     }
   },
@@ -40,6 +64,7 @@
       "--r-1": "16px",
       "--r-2": "24px",
       "--r-3": "34px",
+      "--r-btn": "999px",
       "--border-w": "1px"
     }
   },
@@ -62,6 +87,7 @@
       "--r-1": "6px",
       "--r-2": "10px",
       "--r-3": "16px",
+      "--r-btn": "8px",
       "--border-w": "1px"
     }
   },
@@ -84,6 +110,7 @@
       "--r-1": "0px",
       "--r-2": "0px",
       "--r-3": "0px",
+      "--r-btn": "0px",
       "--border-w": "2px"
     }
   }

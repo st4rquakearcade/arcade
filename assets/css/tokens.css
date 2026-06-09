@@ -7,26 +7,27 @@
  * 아래 값은 프리셋 로딩 전 기본값입니다.
  * ===================================================================== */
 :root {
-  /* 색 (프리셋이 덮어씀) */
-  --bg: #1b1b1d;
-  --surface: #242427;
-  --surface-2: #2e2e33;
-  --line: #38383e;
-  --text: #ecECf0;
-  --text-dim: #9a9aa3;
-  --accent: #e4e4e8; /* 포인트 1색 */
-  --on-accent: #1b1b1d; /* 포인트색 위 글자색 */
-  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  /* 색 (프리셋이 덮어씀) — 기본값: 코스모스 미니멀 */
+  --bg: #f2f1ed;
+  --surface: #fbfbfa;
+  --surface-2: #ffffff;
+  --line: #e5e4df;
+  --text: #1c1c1c;
+  --text-dim: #a3a29c;
+  --accent: #161616; /* 포인트 1색 */
+  --on-accent: #ffffff; /* 포인트색 위 글자색 */
+  --shadow: 0 12px 36px rgba(30, 28, 22, 0.07);
 
   /* 글꼴 (프리셋/폰트관리창이 덮어씀) */
-  --font-display: "Pretendard", system-ui, sans-serif; /* 제목 */
-  --font-body: "Pretendard", system-ui, sans-serif; /* 본문 */
+  --font-display: "Inter", "Pretendard", system-ui, sans-serif; /* 제목 */
+  --font-body: "Inter", "Pretendard", system-ui, sans-serif; /* 본문 */
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
 
   /* 모양 */
-  --r-1: 10px;
-  --r-2: 16px;
-  --r-3: 24px;
+  --r-1: 12px;
+  --r-2: 18px;
+  --r-3: 26px;
+  --r-btn: 999px; /* 버튼 둥글기(필 모양) */
   --border-w: 1px;
 
   /* 간격 */
