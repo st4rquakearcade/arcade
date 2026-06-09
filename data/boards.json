@@ -1,0 +1,56 @@
+[
+  {
+    "id": "home",
+    "name": "대문",
+    "type": "intro",
+    "icon": "◇",
+    "desc": "홈페이지의 첫 화면입니다.",
+    "order": 0,
+    "ownerOnly": true
+  },
+  {
+    "id": "notice",
+    "name": "공지",
+    "type": "list",
+    "icon": "!",
+    "desc": "중요한 안내를 올리는 게시판입니다.",
+    "order": 1,
+    "ownerOnly": true
+  },
+  {
+    "id": "free",
+    "name": "자유",
+    "type": "list",
+    "icon": "#",
+    "desc": "자유롭게 글을 남기는 게시판입니다.",
+    "order": 2,
+    "ownerOnly": false
+  },
+  {
+    "id": "memo",
+    "name": "메모",
+    "type": "stream",
+    "icon": "·",
+    "desc": "짧은 메모를 카드로 흘려 보여줍니다.",
+    "order": 3,
+    "ownerOnly": true
+  },
+  {
+    "id": "guest",
+    "name": "방명록",
+    "type": "guest",
+    "icon": "♥",
+    "desc": "방문자가 인사를 남기는 곳입니다.",
+    "order": 4,
+    "ownerOnly": false
+  },
+  {
+    "id": "banner",
+    "name": "배너",
+    "type": "banner",
+    "icon": "▤",
+    "desc": "링크 배너를 모아 보여줍니다.",
+    "order": 5,
+    "ownerOnly": true
+  }
+]

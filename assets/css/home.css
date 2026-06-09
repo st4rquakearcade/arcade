@@ -1,0 +1,144 @@
+/* =====================================================================
+ * home.css — 대문: 카드 스택 + 스크롤 스냅 UI
+ * ---------------------------------------------------------------------
+ * 세로로 꽉 찬 패널들이 스냅으로 넘어갑니다.
+ * sticky 로 카드가 살짝 겹쳐 쌓이는 "스택" 느낌을 줍니다.
+ * ===================================================================== */
+.stack {
+  scroll-snap-type: y proximity;
+}
+.panel {
+  min-height: calc(100vh - var(--nav-h));
+  display: grid;
+  place-items: center;
+  padding: var(--gap-4) var(--gap-3);
+  scroll-snap-align: start;
+}
+
+/* 스택 카드 */
+.stack-card {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+  width: 100%;
+  max-width: 620px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  padding: var(--gap-4);
+  box-shadow: var(--shadow);
+  will-change: transform, opacity;
+}
+
+/* 대문(인트로) */
+.intro {
+  text-align: center;
+  max-width: 680px;
+}
+.intro .handle {
+  color: var(--text-dim);
+  letter-spacing: 0.18em;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+.intro h1 {
+  font-size: clamp(2.6rem, 9vw, 5rem);
+  line-height: 0.98;
+  margin: var(--gap-2) 0 var(--gap-3);
+}
+.intro .hero-img {
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  overflow: hidden;
+  margin: 0 auto var(--gap-3);
+}
+.intro .hero-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.intro .desc {
+  color: var(--text-dim);
+  max-width: 46ch;
+  margin: 0 auto;
+}
+.scroll-hint {
+  margin-top: var(--gap-4);
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  animation: hintBob 1.6s var(--ease) infinite;
+}
+@keyframes hintBob {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+/* 보드 요약 카드 */
+.board-card .label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.16em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.board-card h2 {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  margin: var(--gap-1) 0 var(--gap-2);
+}
+.board-card .preview-list {
+  list-style: none;
+  margin: var(--gap-3) 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.board-card .preview-list li a {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 4px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text);
+  transition: padding 0.2s var(--ease);
+}
+.board-card .preview-list li a:hover {
+  padding-left: 12px;
+  color: var(--text);
+}
+.board-card .preview-list .t {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.board-card .preview-list .d {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+.board-card .go {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+.board-card .go:hover {
+  color: var(--text);
+}
+
+@media (max-width: 600px) {
+  .stack-card {
+    padding: var(--gap-3);
+  }
+}

@@ -1,0 +1,80 @@
+/* =====================================================================
+ * account.css — 로그인 / 회원가입 / 프로필
+ * ===================================================================== */
+.account-wrap {
+  max-width: 420px;
+  margin: var(--gap-5) auto 0;
+}
+.account-wrap h1 {
+  text-align: center;
+  font-size: 1.6rem;
+}
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  margin: var(--gap-3) 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  padding: 4px;
+}
+.auth-tabs button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  padding: 9px;
+  border-radius: var(--r-1);
+  cursor: pointer;
+}
+.auth-tabs button.is-on {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.auth-form {
+  display: none;
+  flex-direction: column;
+  gap: var(--gap-2);
+}
+.auth-form.is-on {
+  display: flex;
+}
+.auth-msg {
+  min-height: 20px;
+  font-size: 0.84rem;
+  color: var(--text-dim);
+}
+.auth-msg.err {
+  color: #d99;
+}
+.auth-msg.ok {
+  color: var(--text);
+}
+.profile-card {
+  text-align: center;
+}
+.profile-card .avatar {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--gap-2);
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+}
+.role-badge {
+  display: inline-block;
+  font-size: 0.76rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 3px 12px;
+  margin-top: 6px;
+}
+.hint {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: var(--gap-3);
+}
