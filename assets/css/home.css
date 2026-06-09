@@ -1,144 +1,130 @@
 /* =====================================================================
- * home.css — 대문: 카드 스택 + 스크롤 스냅 UI
+ * home.css — 대문: 중앙 단일 컬럼 + 카드 스택 (carrd / linktree 구조)
  * ---------------------------------------------------------------------
- * 세로로 꽉 찬 패널들이 스냅으로 넘어갑니다.
- * sticky 로 카드가 살짝 겹쳐 쌓이는 "스택" 느낌을 줍니다.
+ * 화면 중앙에 좁은 컬럼: 프로필(아바타·이름·소개) → 링크 카드가 세로로 쌓임.
  * ===================================================================== */
-.stack {
-  scroll-snap-type: y proximity;
-}
-.panel {
+.bio {
   min-height: calc(100vh - var(--nav-h));
-  display: grid;
-  place-items: center;
-  padding: var(--gap-4) var(--gap-3);
-  scroll-snap-align: start;
-}
-
-/* 스택 카드 */
-.stack-card {
-  position: sticky;
-  top: calc(var(--nav-h) + 24px);
-  width: 100%;
-  max-width: 620px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-3);
-  padding: var(--gap-4);
-  box-shadow: var(--shadow);
-  will-change: transform, opacity;
-}
-
-/* 대문(인트로) */
-.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-4);
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--gap-5) var(--gap-3);
   text-align: center;
-  max-width: 680px;
 }
-.intro .handle {
-  color: var(--accent);
-  letter-spacing: 0.22em;
-  font-size: 0.78rem;
-  text-transform: uppercase;
+
+/* 프로필 */
+.bio-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.intro h1 {
-  font-size: clamp(2.6rem, 9vw, 5rem);
-  line-height: 0.98;
-  margin: var(--gap-2) 0 var(--gap-3);
-}
-.intro .hero-img {
-  aspect-ratio: 16 / 9;
-  border: 1px solid var(--line);
-  border-radius: var(--r-2);
-  background: var(--surface);
+.bio-avatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: var(--border-w) solid var(--line);
   display: grid;
   place-items: center;
+  font-family: var(--font-display);
+  font-size: 2rem;
   color: var(--text-dim);
-  overflow: hidden;
-  margin: 0 auto var(--gap-3);
+  margin-bottom: var(--gap-3);
+  box-shadow: var(--shadow);
 }
-.intro .hero-img img {
+.bio-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.intro .desc {
-  color: var(--text-dim);
-  max-width: 46ch;
-  margin: 0 auto;
-}
-.scroll-hint {
-  margin-top: var(--gap-4);
-  color: var(--text-dim);
-  font-size: 0.78rem;
-  letter-spacing: 0.2em;
-  animation: hintBob 1.6s var(--ease) infinite;
-}
-@keyframes hintBob {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translateY(6px);
-    opacity: 1;
-  }
-}
-
-/* 보드 요약 카드 */
-.board-card .label {
-  font-size: 0.74rem;
+.bio-handle {
   color: var(--accent);
+  font-size: 0.76rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  margin: 0 0 4px;
+}
+.bio-name {
+  font-size: clamp(1.7rem, 5vw, 2.4rem);
+  line-height: 1.1;
+  margin: 0 0 var(--gap-2);
+}
+.bio-desc {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  max-width: 40ch;
+  margin: 0;
+}
+
+/* 링크 카드 스택 */
+.link-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-2);
+}
+.link-card {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--r-2);
+  color: var(--text);
+  text-align: left;
+  box-shadow: var(--shadow);
+  transition: transform 0.18s var(--ease), border-color 0.18s var(--ease),
+    background 0.18s var(--ease);
 }
-.board-card h2 {
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
-  margin: var(--gap-1) 0 var(--gap-2);
+.link-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: var(--surface-2);
 }
-.board-card .preview-list {
-  list-style: none;
-  margin: var(--gap-3) 0;
-  padding: 0;
+.link-card .lc-ico {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
   display: grid;
-  gap: 2px;
+  place-items: center;
+  border-radius: var(--r-1);
+  background: var(--bg);
+  border: var(--border-w) solid var(--line);
+  font-size: 1.1rem;
 }
-.board-card .preview-list li a {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px 4px;
-  border-bottom: 1px solid var(--line);
-  color: var(--text);
-  transition: padding 0.2s var(--ease);
+.link-card .lc-text {
+  flex: 1;
+  min-width: 0;
 }
-.board-card .preview-list li a:hover {
-  padding-left: 12px;
-  color: var(--text);
+.link-card .lc-name {
+  font-weight: 600;
+  font-size: 1rem;
 }
-.board-card .preview-list .t {
+.link-card .lc-sub {
+  color: var(--text-dim);
+  font-size: 0.8rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.board-card .preview-list .d {
-  color: var(--text-dim);
-  font-size: 0.78rem;
+.link-card .lc-arrow {
   flex-shrink: 0;
-}
-.board-card .go {
   color: var(--text-dim);
-  font-size: 0.85rem;
+  transition: transform 0.18s var(--ease), color 0.18s var(--ease);
 }
-.board-card .go:hover {
-  color: var(--text);
+.link-card:hover .lc-arrow {
+  color: var(--accent);
+  transform: translate(2px, -2px);
 }
 
-@media (max-width: 600px) {
-  .stack-card {
-    padding: var(--gap-3);
-  }
+.bio-foot {
+  color: var(--text-dim);
+  font-size: 0.76rem;
 }
