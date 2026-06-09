@@ -16,9 +16,8 @@
 window.SQ_FIREBASE = {
   apiKey: "AIzaSyBZB39jxpd6_zgbMYlYX_tlsSDshXgGgXQ",
   authDomain: "preview-85921.firebaseapp.com",
-  // ▼▼ RTDB 를 만든 뒤 콘솔에 표시되는 정확한 주소로 바꾸세요(리전 주의) ▼▼
-  databaseURL: "https://preview-85921-default-rtdb.firebaseio.com",
-  // ▲▲ 위 주소가 틀리면 Firebase 가 연결되지 않고 localStorage 로만 동작합니다 ▲▲
+  // 아시아(asia-southeast1) 리전 RTDB 주소
+  databaseURL: "https://preview-85921-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "preview-85921",
   storageBucket: "preview-85921.firebasestorage.app",
   messagingSenderId: "477292162467",
