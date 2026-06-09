@@ -33,12 +33,44 @@
     "--accent": "강조"
   };
   var BOARD_TYPES = {
-    intro: "대문(인트로)",
     list: "목록형",
     stream: "메모(흐름)",
+    gallery: "갤러리(사진)",
+    faq: "FAQ(접이식)",
     guest: "방명록",
-    banner: "배너"
+    banner: "배너",
+    intro: "대문(인트로)"
   };
+  // 목록 보기 형태(list/stream/gallery 에 적용)
+  var VIEWS = {
+    cards: "카드",
+    compact: "목록",
+    magazine: "매거진",
+    grid: "그리드"
+  };
+
+  // data-f 셀렉트 HTML 생성
+  function selectHTML(field, map, current) {
+    return (
+      '<select data-f="' +
+      field +
+      '">' +
+      Object.keys(map)
+        .map(function (k) {
+          return (
+            '<option value="' +
+            k +
+            '"' +
+            (current === k ? " selected" : "") +
+            ">" +
+            map[k] +
+            "</option>"
+          );
+        })
+        .join("") +
+      "</select>"
+    );
+  }
 
   /* ---------- 탭 ---------- */
   function selectTab(name) {
@@ -252,34 +284,21 @@
           '" placeholder="영문 id"' +
           (b.id === "home" ? " readonly" : "") +
           " />" +
-          '<select data-f="type">' +
-          Object.keys(BOARD_TYPES)
-            .map(function (t) {
-              return (
-                '<option value="' +
-                t +
-                '"' +
-                (b.type === t ? " selected" : "") +
-                ">" +
-                BOARD_TYPES[t] +
-                "</option>"
-              );
-            })
-            .join("") +
-          "</select>" +
-          '<div class="ops">' +
-          '<label class="muted" style="display:flex;align-items:center;gap:3px;font-size:.7rem" title="주인/관리자만 글쓰기"><input type="checkbox" data-f="ownerOnly" style="width:auto"' +
+          selectHTML("type", BOARD_TYPES, b.type) +
+          selectHTML("view", VIEWS, b.view || "cards") +
+          '<label class="rowtog" title="관리자만 글쓰기"><input type="checkbox" data-f="ownerOnly"' +
           (b.ownerOnly ? " checked" : "") +
-          ">주인만</label>" +
-          '<label class="muted" style="display:flex;align-items:center;gap:3px;font-size:.7rem" title="비로그인 방문자는 열람 불가"><input type="checkbox" data-f="membersOnly" style="width:auto"' +
+          ">관리자만</label>" +
+          '<label class="rowtog" title="비로그인 방문자는 열람 불가"><input type="checkbox" data-f="membersOnly"' +
           (b.membersOnly ? " checked" : "") +
           ">회원전용</label>" +
-          '<button class="btn btn--sm" type="button" data-up>↑</button>' +
-          '<button class="btn btn--sm" type="button" data-down>↓</button>' +
-          '<button class="btn btn--sm" type="button" data-gen title="전용 HTML 파일 생성">⬇HTML</button>' +
+          '<div class="ops">' +
+          '<button class="btn--icon" type="button" data-up title="위로">↑</button>' +
+          '<button class="btn--icon" type="button" data-down title="아래로">↓</button>' +
+          '<button class="btn--icon" type="button" data-gen title="전용 HTML 파일 생성">⬇</button>' +
           (b.id === "home"
             ? ""
-            : '<button class="btn btn--sm btn--danger" type="button" data-rm>✕</button>') +
+            : '<button class="btn--icon btn--icon-danger" type="button" data-rm title="삭제">✕</button>') +
           "</div></div>"
         );
       })
@@ -349,6 +368,7 @@
       id: id,
       name: name,
       type: $("nb-type").value,
+      view: $("nb-view").value,
       icon: $("nb-icon").value.trim() || "·",
       desc: "",
       ownerOnly: $("nb-owner").checked,
@@ -358,11 +378,10 @@
     state.boards.push(board);
     renderBoards();
     $("nb-name").value = $("nb-id").value = $("nb-icon").value = "";
-    // 요구사항: 게시판을 만들면 연동해 전용 HTML 파일을 자동 제작
+    // 게시판 생성 후 저장(전용 HTML 은 각 행의 ⬇ 버튼으로 받을 수 있음)
     SQStore.saveBoards(state.boards).then(function () {
       SQStore.flush("boards");
-      downloadBoardHtml(board);
-      toast("게시판 추가됨 — 전용 HTML 파일을 내려받았습니다.");
+      toast("게시판이 생성되었습니다.");
     });
   }
 
@@ -384,8 +403,10 @@
   // 용도(type)에 맞춘 안내 코드를 자동으로 끼워 넣는다.
   function typeHint(board) {
     var map = {
-      list: "제목·내용이 있는 글을 카드 목록으로 보여줍니다.",
-      stream: "짧은 메모를 카드 흐름으로 보여줍니다.",
+      list: "제목·내용이 있는 글을 목록으로 보여줍니다.",
+      stream: "짧은 메모를 흐름으로 보여줍니다.",
+      gallery: "사진을 썸네일 그리드로 보여줍니다.",
+      faq: "질문/답변을 접이식으로 보여줍니다.",
       guest: "방문자가 인사를 남기는 방명록입니다.",
       banner: "링크 배너를 격자로 보여줍니다.",
       intro: "사이트 첫 화면(대문)입니다."
@@ -422,6 +443,7 @@
       '  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>\n' +
       '  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>\n' +
       '  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>\n' +
+      '  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>\n' +
       "\n" +
       "  <!-- 이 페이지가 보여줄 게시판 id -->\n" +
       "  <script>window.SQ_BOARD = " +
@@ -431,8 +453,10 @@
       '  <script defer src="assets/js/firebase.js"></script>\n' +
       '  <script defer src="assets/js/store.js"></script>\n' +
       '  <script defer src="assets/js/auth.js"></script>\n' +
+      '  <script defer src="assets/js/fonts.js"></script>\n' +
       '  <script defer src="assets/js/theme.js"></script>\n' +
       '  <script defer src="assets/js/app.js"></script>\n' +
+      '  <script defer src="assets/js/anim.js"></script>\n' +
       '  <script defer src="assets/js/board.js"></script>\n' +
       "</head>\n" +
       "<body>\n" +
@@ -525,6 +549,43 @@
         });
       });
     });
+  }
+
+  /* ---------- 폰트(Google Fonts) ---------- */
+  function renderFont() {
+    var box = $("font-panel");
+    if (!box || !window.SQFont) return;
+    state.site.fonts = state.site.fonts || { display: "", body: "" };
+    var opts = SQFont.SUGGESTED.map(function (f) {
+      return '<option value="' + esc(f) + '">';
+    }).join("");
+
+    box.innerHTML =
+      '<datalist id="font-suggest">' + opts + "</datalist>" +
+      '<div class="field"><label>제목 글꼴 (비우면 프리셋 기본값)</label>' +
+      '<input id="font-display" list="font-suggest" placeholder="예: Playfair Display" value="' +
+      esc(state.site.fonts.display || "") +
+      '" /></div>' +
+      '<div class="field"><label>본문 글꼴</label>' +
+      '<input id="font-body" list="font-suggest" placeholder="예: Inter" value="' +
+      esc(state.site.fonts.body || "") +
+      '" /></div>' +
+      '<div class="font-preview card"><div class="fp-title">가나다 ABC 0123</div>' +
+      '<div class="fp-body">다람쥐 헌 쳇바퀴에 타고파. The quick brown fox.</div></div>' +
+      '<p class="muted" style="font-size:.8rem">입력하면 즉시 미리보기에 적용됩니다. 저장을 눌러야 영구 반영됩니다.</p>';
+
+    function applyDisplay() {
+      var v = $("font-display").value.trim();
+      state.site.fonts.display = v;
+      if (v) SQFont.setRole("display", v);
+    }
+    function applyBody() {
+      var v = $("font-body").value.trim();
+      state.site.fonts.body = v;
+      if (v) SQFont.setRole("body", v);
+    }
+    $("font-display").addEventListener("input", applyDisplay);
+    $("font-body").addEventListener("input", applyBody);
   }
 
   /* ---------- 4) 백업 ---------- */
@@ -630,6 +691,11 @@
         return '<option value="' + t + '">' + BOARD_TYPES[t] + "</option>";
       })
       .join("");
+    $("nb-view").innerHTML = Object.keys(VIEWS)
+      .map(function (v) {
+        return '<option value="' + v + '">' + VIEWS[v] + " 보기</option>";
+      })
+      .join("");
 
     Promise.all([SQStore.getSite(), SQStore.getBoards(), SQTheme.all()]).then(
       function (r) {
@@ -642,6 +708,7 @@
         selectTheme(state.currentTheme);
         renderBoards();
         renderUsers();
+        renderFont();
         // account.html 등에서 #users 로 들어오면 회원 탭 열기
         if (location.hash === "#users") {
           var ub = document.querySelector('.skin-tabs [data-tab="users"]');

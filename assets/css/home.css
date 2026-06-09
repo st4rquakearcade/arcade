@@ -35,10 +35,10 @@
   max-width: 680px;
 }
 .intro .handle {
-  color: var(--text-dim);
-  letter-spacing: 0.18em;
-  font-size: 0.8rem;
-  font-family: var(--font-mono);
+  color: var(--accent);
+  letter-spacing: 0.22em;
+  font-size: 0.78rem;
+  text-transform: uppercase;
 }
 .intro h1 {
   font-size: clamp(2.6rem, 9vw, 5rem);
@@ -87,10 +87,10 @@
 
 /* 보드 요약 카드 */
 .board-card .label {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  letter-spacing: 0.16em;
+  font-size: 0.74rem;
+  color: var(--accent);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
   gap: 8px;

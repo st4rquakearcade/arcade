@@ -1,58 +1,90 @@
 {
-  "graphite": {
-    "name": "그래파이트",
-    "mode": "dark",
-    "vars": {
-      "--bg": "#1c1c1e",
-      "--surface": "#26262a",
-      "--surface-2": "#303036",
-      "--line": "#3a3a40",
-      "--text": "#e6e6ea",
-      "--text-dim": "#9a9aa2",
-      "--accent": "#c9c9d0",
-      "--shadow": "0 12px 40px rgba(0,0,0,.45)"
-    }
-  },
-  "paper": {
-    "name": "페이퍼",
+  "editorial": {
+    "name": "에디토리얼",
     "mode": "light",
+    "googleFonts": ["Instrument+Serif:ital@0;1", "Inter:wght@400;500;600"],
     "vars": {
-      "--bg": "#ececec",
-      "--surface": "#f7f7f7",
+      "--bg": "#f3f1ec",
+      "--surface": "#faf9f6",
       "--surface-2": "#ffffff",
-      "--line": "#d4d4d6",
-      "--text": "#2a2a2c",
-      "--text-dim": "#6c6c70",
-      "--accent": "#4a4a50",
-      "--shadow": "0 12px 40px rgba(0,0,0,.12)"
+      "--line": "#ddd9d1",
+      "--text": "#23211e",
+      "--text-dim": "#716c63",
+      "--accent": "#8a2b2b",
+      "--on-accent": "#ffffff",
+      "--shadow": "0 16px 44px rgba(40,35,25,.10)",
+      "--font-display": "'Instrument Serif', Georgia, serif",
+      "--font-body": "'Inter', system-ui, sans-serif",
+      "--r-1": "4px",
+      "--r-2": "7px",
+      "--r-3": "12px",
+      "--border-w": "1px"
     }
   },
-  "fog": {
-    "name": "포그",
+  "soft": {
+    "name": "소프트 미니멀",
     "mode": "light",
+    "googleFonts": ["Quicksand:wght@500;600;700", "Nunito+Sans:wght@400;600"],
     "vars": {
-      "--bg": "#d6d6d9",
-      "--surface": "#e6e6e9",
-      "--surface-2": "#f2f2f4",
-      "--line": "#bcbcc0",
-      "--text": "#33333a",
-      "--text-dim": "#70707a",
-      "--accent": "#55555e",
-      "--shadow": "0 12px 40px rgba(0,0,0,.14)"
+      "--bg": "#e9ebee",
+      "--surface": "#f4f6f8",
+      "--surface-2": "#ffffff",
+      "--line": "#d8dce1",
+      "--text": "#2c3138",
+      "--text-dim": "#747c86",
+      "--accent": "#5b8def",
+      "--on-accent": "#ffffff",
+      "--shadow": "0 18px 44px rgba(40,50,70,.13)",
+      "--font-display": "'Quicksand', system-ui, sans-serif",
+      "--font-body": "'Nunito Sans', system-ui, sans-serif",
+      "--r-1": "16px",
+      "--r-2": "24px",
+      "--r-3": "34px",
+      "--border-w": "1px"
     }
   },
-  "noir": {
-    "name": "느와르",
+  "arcade": {
+    "name": "레트로 아케이드",
     "mode": "dark",
+    "googleFonts": ["Space+Grotesk:wght@500;700", "DM+Sans:wght@400;500"],
     "vars": {
-      "--bg": "#161618",
-      "--surface": "#202024",
-      "--surface-2": "#2a2a30",
-      "--line": "#33333a",
-      "--text": "#dcdce2",
-      "--text-dim": "#8a8a92",
-      "--accent": "#b6b6be",
-      "--shadow": "0 14px 44px rgba(0,0,0,.55)"
+      "--bg": "#18181b",
+      "--surface": "#1f1f24",
+      "--surface-2": "#2a2a31",
+      "--line": "#34343c",
+      "--text": "#f0f0f2",
+      "--text-dim": "#8e8e98",
+      "--accent": "#c6ff3a",
+      "--on-accent": "#16160f",
+      "--shadow": "0 20px 60px rgba(0,0,0,.55)",
+      "--font-display": "'Space Grotesk', system-ui, sans-serif",
+      "--font-body": "'DM Sans', system-ui, sans-serif",
+      "--r-1": "6px",
+      "--r-2": "10px",
+      "--r-3": "16px",
+      "--border-w": "1px"
+    }
+  },
+  "brutal": {
+    "name": "브루탈리스트 모노",
+    "mode": "light",
+    "googleFonts": ["Space+Mono:wght@400;700"],
+    "vars": {
+      "--bg": "#e7e7e3",
+      "--surface": "#f2f2ee",
+      "--surface-2": "#ffffff",
+      "--line": "#161616",
+      "--text": "#121212",
+      "--text-dim": "#585854",
+      "--accent": "#ff4a1c",
+      "--on-accent": "#ffffff",
+      "--shadow": "6px 6px 0 #161616",
+      "--font-display": "'Space Mono', ui-monospace, monospace",
+      "--font-body": "'Space Mono', ui-monospace, monospace",
+      "--r-1": "0px",
+      "--r-2": "0px",
+      "--r-3": "0px",
+      "--border-w": "2px"
     }
   }
 }

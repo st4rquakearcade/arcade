@@ -78,16 +78,31 @@
         : "") +
       "</div>";
 
-    var body;
-    if (board.type === "banner") body = renderBanner(board, posts);
-    else if (board.type === "guest") body = renderGuest(board, posts);
-    else if (board.type === "stream") body = renderStream(board, posts);
-    else body = renderRows(board, posts);
-
-    mount.innerHTML = head + body;
+    mount.innerHTML = head + bodyFor(board, posts);
 
     if (board.type === "guest") bindGuestForm(board);
-    animate();
+    if (board.type === "faq") bindFaq();
+    reveal();
+  }
+
+  /* 타입 + 보기 형태(view)에 따라 목록 본문을 고른다 */
+  function bodyFor(board, posts) {
+    if (board.type === "banner") return renderBanner(board, posts);
+    if (board.type === "guest") return renderGuest(board, posts);
+    if (board.type === "faq") return renderFaq(board, posts);
+    if (!posts.length) return emptyBox(board);
+
+    var view =
+      board.view ||
+      (board.type === "gallery"
+        ? "grid"
+        : board.type === "stream"
+        ? "compact"
+        : "cards");
+    if (view === "compact") return renderCompact(board, posts);
+    if (view === "magazine") return renderMagazine(board, posts);
+    if (view === "grid") return renderGrid(board, posts);
+    return renderCards(board, posts);
   }
 
   function postLink(board, p, inner) {
@@ -110,27 +125,37 @@
     return esc(p.title || strip(p.html, 40) || "(제목 없음)");
   }
 
-  function renderRows(board, posts) {
-    if (!posts.length) return emptyBox(board);
+  function firstImg(html) {
+    var m = /<img[^>]+src=["']([^"']+)["']/i.exec(html || "");
+    return m ? m[1] : "";
+  }
+  function isLocked(p) {
+    return p.secret && !SQApp.isOwner();
+  }
+  function meta(p) {
     return (
-      '<div class="list-stack" data-stagger>' +
+      '<div class="meta"><span>' +
+      esc(p.author || "익명") +
+      "</span><span>" +
+      fmt(p.createdAt) +
+      "</span></div>"
+    );
+  }
+
+  /* 보기: 카드 */
+  function renderCards(board, posts) {
+    return (
+      '<div class="list-cards">' +
       posts
         .map(function (p) {
           return (
-            '<article class="card post-item" data-anim>' +
+            '<article class="card post-item" data-reveal>' +
             postLink(
               board,
               p,
-              "<h3>" +
-                (p.pinned ? "📌 " : "") +
-                secretTitle(p) +
-                "</h3>" +
-                '<div class="meta"><span>' +
-                esc(p.author || "익명") +
-                "</span><span>" +
-                fmt(p.createdAt) +
-                "</span></div>" +
-                (p.secret && !SQApp.isOwner()
+              "<h3>" + (p.pinned ? "📌 " : "") + secretTitle(p) + "</h3>" +
+                meta(p) +
+                (isLocked(p)
                   ? ""
                   : '<p class="excerpt">' + esc(strip(p.html)) + "</p>")
             ) +
@@ -142,30 +167,117 @@
     );
   }
 
-  function renderStream(board, posts) {
-    if (!posts.length) return emptyBox(board);
+  /* 보기: 조밀한 목록 */
+  function renderCompact(board, posts) {
     return (
-      '<div class="stream-grid" data-stagger>' +
+      '<div class="list-compact" data-reveal>' +
       posts
         .map(function (p) {
-          var body =
-            p.secret && !SQApp.isOwner()
-              ? "🔒 비밀 메모"
-              : p.html || "";
+          return postLink(
+            board,
+            p,
+            '<span class="t">' +
+              (p.pinned ? "📌 " : "") +
+              secretTitle(p) +
+              "</span>" +
+              '<span class="d">' +
+              esc(p.author || "익명") +
+              " · " +
+              fmt(p.createdAt) +
+              "</span>"
+          ).replace('<a ', '<a class="row-line" ');
+        })
+        .join("") +
+      "</div>"
+    );
+  }
+
+  /* 보기: 매거진(썸네일 + 발췌) */
+  function renderMagazine(board, posts) {
+    return (
+      '<div class="list-mag">' +
+      posts
+        .map(function (p) {
+          var img = isLocked(p) ? "" : firstImg(p.html);
           return (
-            '<article class="card" data-anim>' +
-            (p.title ? "<h3>" + secretTitle(p) + "</h3>" : "") +
-            '<div class="stream-body">' +
-            body +
-            "</div>" +
-            '<div class="meta muted" style="font-size:.74rem;margin-top:8px">' +
-            postLink(board, p, fmt(p.createdAt) + " · 열기") +
-            "</div></article>"
+            '<article class="card mag-item" data-reveal>' +
+            postLink(
+              board,
+              p,
+              (img
+                ? '<div class="mag-thumb"><img src="' + esc(img) + '" alt=""></div>'
+                : "") +
+                '<div class="mag-text"><h3>' +
+                (p.pinned ? "📌 " : "") +
+                secretTitle(p) +
+                "</h3>" +
+                meta(p) +
+                (isLocked(p)
+                  ? ""
+                  : '<p class="excerpt">' + esc(strip(p.html, 160)) + "</p>") +
+                "</div>"
+            ) +
+            "</article>"
           );
         })
         .join("") +
       "</div>"
     );
+  }
+
+  /* 보기: 갤러리 그리드(썸네일) */
+  function renderGrid(board, posts) {
+    return (
+      '<div class="list-grid">' +
+      posts
+        .map(function (p) {
+          var img = isLocked(p) ? "" : firstImg(p.html);
+          var inner =
+            (img
+              ? '<img src="' + esc(img) + '" alt="">'
+              : '<span class="ph">' + esc((p.title || "·").slice(0, 1)) + "</span>") +
+            '<span class="cap">' + (p.pinned ? "📌 " : "") + secretTitle(p) + "</span>";
+          return (
+            '<article class="grid-item" data-reveal>' +
+            postLink(board, p, inner) +
+            "</article>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
+  }
+
+  /* 타입: FAQ(접이식 질문/답변) */
+  function renderFaq(board, posts) {
+    if (!posts.length) return emptyBox(board);
+    return (
+      '<div class="faq-list">' +
+      posts
+        .map(function (p) {
+          var ans = isLocked(p) ? "<p>🔒 비밀글</p>" : p.html || "";
+          return (
+            '<div class="faq-item card" data-reveal>' +
+            '<button type="button" class="faq-q">' +
+            '<span>' + (p.pinned ? "📌 " : "Q. ") + secretTitle(p) + "</span>" +
+            '<span class="faq-mark">+</span></button>' +
+            '<div class="faq-a">' + ans +
+            '<div class="meta muted" style="margin-top:8px">' +
+            esc(p.author || "익명") + " · " + fmt(p.createdAt) +
+            "</div></div></div>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
+  }
+
+  function bindFaq() {
+    mount.querySelectorAll(".faq-q").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        btn.parentElement.classList.toggle("is-open");
+      });
+    });
   }
 
   function renderBanner(board, posts) {
@@ -180,12 +292,12 @@
             esc(p.title || "배너") +
             "</span>";
           return p.link
-            ? '<a class="card banner" data-anim target="_blank" rel="noopener" href="' +
+            ? '<a class="card banner" data-reveal target="_blank" rel="noopener" href="' +
                 esc(p.link) +
                 '">' +
                 inner +
                 "</a>"
-            : '<div class="card banner" data-anim>' + inner + "</div>";
+            : '<div class="card banner" data-reveal>' + inner + "</div>";
         })
         .join("") +
       "</div>"
@@ -211,7 +323,7 @@
                 ? '<span class="muted">🔒 비밀 방명록</span>'
                 : esc(strip(p.html, 500));
             return (
-              '<article class="card guest-entry" data-anim>' +
+              '<article class="card guest-entry" data-reveal>' +
               '<div class="spread row"><span class="who">' +
               esc(p.author || "익명") +
               '</span><span class="muted" style="font-size:.76rem">' +
@@ -331,7 +443,7 @@
       .join("");
 
     mount.innerHTML =
-      '<article class="article" data-anim>' +
+      '<article class="article" data-reveal>' +
       '<a class="muted" href="' +
       root +
       "board.html?board=" +
@@ -371,19 +483,16 @@
         });
       });
     });
-    animate();
+    reveal();
   }
 
-  function animate() {
-    if (!window.gsap) return;
-    var items = mount.querySelectorAll("[data-anim]");
-    gsap.from(items, {
-      opacity: 0,
-      y: 24,
-      duration: 0.6,
-      stagger: 0.06,
-      ease: "power3.out"
-    });
+  // 스크롤 등장(anim.js). 라이브러리 없으면 즉시 표시.
+  function reveal() {
+    if (window.SQAnim) SQAnim.reveal(mount);
+    else
+      mount.querySelectorAll("[data-reveal]").forEach(function (el) {
+        el.classList.add("is-revealed");
+      });
   }
 
   /* ---------------- 부트 ---------------- */

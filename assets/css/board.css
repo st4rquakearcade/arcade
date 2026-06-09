@@ -21,7 +21,157 @@
   margin: 4px 0 2px;
 }
 
-/* ---------- list 타입 : 카드 목록(스냅) ---------- */
+/* ===================== 보기 형태(view) ===================== */
+/* 카드 */
+.list-cards {
+  display: grid;
+  gap: var(--gap-2);
+}
+
+/* 조밀한 목록 */
+.list-compact {
+  border-top: var(--border-w) solid var(--line);
+}
+.list-compact .row-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+  padding: 13px 6px;
+  border-bottom: var(--border-w) solid var(--line);
+  color: var(--text);
+  transition: padding 0.18s var(--ease), background 0.18s var(--ease);
+}
+.list-compact .row-line:hover {
+  padding-left: 14px;
+  background: var(--surface);
+}
+.list-compact .t {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.list-compact .d {
+  flex-shrink: 0;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+}
+
+/* 매거진(썸네일 + 발췌) */
+.list-mag {
+  display: grid;
+  gap: var(--gap-2);
+}
+.list-mag .mag-item a {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--gap-3);
+  color: var(--text);
+}
+.list-mag .mag-thumb {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-1);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.list-mag .mag-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.list-mag .mag-item.card {
+  padding: var(--gap-2);
+}
+@media (max-width: 560px) {
+  .list-mag .mag-item a {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 갤러리 그리드 */
+.list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--gap-2);
+}
+.list-grid .grid-item a {
+  display: block;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-2);
+  overflow: hidden;
+  background: var(--surface);
+  border: var(--border-w) solid var(--line);
+  color: var(--text);
+}
+.list-grid .grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.list-grid .grid-item .ph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--text-dim);
+}
+.list-grid .grid-item .cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18px 10px 8px;
+  font-size: 0.8rem;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* FAQ(접이식) */
+.faq-list {
+  display: grid;
+  gap: var(--gap-1);
+}
+.faq-item {
+  padding: 0;
+  overflow: hidden;
+}
+.faq-q {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text);
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 16px var(--gap-3);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+.faq-mark {
+  color: var(--accent);
+  transition: transform 0.2s var(--ease);
+}
+.faq-item.is-open .faq-mark {
+  transform: rotate(45deg);
+}
+.faq-a {
+  display: none;
+  padding: 0 var(--gap-3) var(--gap-3);
+  color: var(--text-dim);
+}
+.faq-item.is-open .faq-a {
+  display: block;
+}
+
+/* ---------- (구) list 타입 : 카드 목록(스냅) ---------- */
 .list-stack {
   display: grid;
   gap: var(--gap-2);

@@ -17,6 +17,7 @@
     <script defer src="assets/js/firebase.js"></script>
     <script defer src="assets/js/store.js"></script>
     <script defer src="assets/js/auth.js"></script>
+    <script defer src="assets/js/fonts.js"></script>
     <script defer src="assets/js/theme.js"></script>
     <script defer src="assets/js/app.js"></script>
     <script defer src="assets/js/skin.js"></script>
@@ -40,6 +41,7 @@
         <button data-tab="site" data-perm="manageSite" class="is-on">사이트</button>
         <button data-tab="theme" data-perm="manageSite">테마</button>
         <button data-tab="board">게시판</button>
+        <button data-tab="font" data-perm="manageSite">폰트</button>
         <button data-tab="users" data-perm="manageUsers">회원</button>
         <button data-tab="backup" data-perm="manageSite">백업</button>
       </div>
@@ -109,14 +111,24 @@
           </div>
           <div class="field-grid" style="margin-top: 8px">
             <select id="nb-type"></select>
+            <select id="nb-view"></select>
+          </div>
+          <div class="field-grid" style="margin-top: 8px">
             <input id="nb-icon" type="text" placeholder="아이콘 (예: ◆)" />
+            <span></span>
           </div>
           <label class="row" style="margin: 8px 0; gap: 16px">
-            <span class="row" style="margin: 0"><input type="checkbox" id="nb-owner" style="width: auto" /> 주인만 글쓰기</span>
+            <span class="row" style="margin: 0"><input type="checkbox" id="nb-owner" style="width: auto" /> 관리자만 글쓰기</span>
             <span class="row" style="margin: 0"><input type="checkbox" id="nb-members" style="width: auto" /> 회원만 열람</span>
           </label>
-          <button class="btn btn--primary" id="add-board" type="button">＋ 추가하고 HTML 생성</button>
+          <button class="btn btn--primary" id="add-board" type="button">＋ 게시판 생성</button>
         </div>
+      </section>
+
+      <!-- 폰트 (Google Fonts) -->
+      <section id="panel-font" class="skin-panel">
+        <p class="muted">제목/본문 글꼴을 Google Fonts에서 골라 적용합니다. 입력칸을 누르면 추천 목록이 뜹니다.</p>
+        <div id="font-panel"></div>
       </section>
 
       <!-- 회원 관리 (최고 관리자) -->

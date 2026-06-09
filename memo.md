@@ -40,6 +40,17 @@
 - 권한 연동: write.js(작성/수정 가드·옵션), board.js(쓰기/수정/삭제·소유권), editor 탭별 권한
 - Firebase 연동 전용 파일 분리: db.js → firebase.js (config 는 firebase-config.js 한 곳)
 
+## 3차 업데이트 (디자인 + 기능)
+- 스타일 프리셋화: 색+글꼴+라운드+테두리 토큰 전체를 프리셋이 제어
+  (editorial/soft/arcade/brutal, 모두 모노톤+포인트1색), themes.json/tokens.css 확장
+- Google Fonts 관리: fonts.js(SQFont) + 스킨 에디터 폰트 탭, site.fonts 오버라이드
+- 게시판 타입 추가: gallery, faq
+- 보기 형태 추가: cards/compact/magazine/grid (board.view), board.js 렌더 분기
+- 애니메이션 라이브러리: anim.js + Lenis 부드러운 스크롤 + [data-reveal] 등장
+- 스킨 에디터: 게시판 행 한 줄 정렬·아이콘 버튼, "관리자만" 라벨,
+  버튼 "게시판 생성"(자동 다운로드 제거, ⬇는 행별 버튼)
+- 포인트색(--accent)·테두리두께(--border-w)·폰트 토큰을 base/layout/home/board 에 반영
+
 ## 다음 후보 작업
 - Firebase Auth(익명 로그인)로 방명록 쓰기 보안 강화
 - 댓글 기능, 검색/태그 필터

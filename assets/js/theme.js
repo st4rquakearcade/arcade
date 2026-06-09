@@ -65,6 +65,8 @@
     return all().then(function (themes) {
       var t = themes[id] || themes[Object.keys(themes)[0]];
       if (t) {
+        // 프리셋이 쓰는 Google Fonts 먼저 로드
+        if (t.googleFonts && global.SQFont) SQFont.loadGoogle(t.googleFonts);
         applyVars(t.vars, t.mode);
         document.documentElement.setAttribute("data-theme", id);
       }
@@ -84,7 +86,14 @@
       return Promise.resolve();
     }
     return SQStore.getSite().then(function (site) {
-      return apply(pref || (site && site.theme) || "graphite");
+      return apply(pref || (site && site.theme) || "editorial").then(function () {
+        // 사이트에 따로 지정한 폰트가 있으면 프리셋 폰트를 덮어쓴다
+        var f = site && site.fonts;
+        if (f && global.SQFont) {
+          if (f.display) SQFont.setRole("display", f.display);
+          if (f.body) SQFont.setRole("body", f.body);
+        }
+      });
     });
   }
 
