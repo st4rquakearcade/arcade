@@ -35,7 +35,26 @@
   }
 
   function canWrite(board) {
-    return !board.ownerOnly || SQApp.isOwner();
+    if (!window.SQAuth || !SQAuth.isLoggedIn()) return false;
+    if (board.type === "guest") return false; // 방명록은 아래 폼으로 작성
+    return board.ownerOnly
+      ? SQAuth.hasPerm("writeAny")
+      : SQAuth.hasPerm("writeMember");
+  }
+
+  function isOwnPost(p) {
+    var me = window.SQAuth && SQAuth.current();
+    return !!(me && p.authorId && p.authorId === me.id);
+  }
+  function canEdit(p) {
+    if (!window.SQAuth) return false;
+    return SQAuth.hasPerm("editAny") || (isOwnPost(p) && SQAuth.hasPerm("editOwn"));
+  }
+  function canDelete(p) {
+    if (!window.SQAuth) return false;
+    return (
+      SQAuth.hasPerm("deleteAny") || (isOwnPost(p) && SQAuth.hasPerm("deleteOwn"))
+    );
   }
 
   /* ---------------- 목록 ---------------- */
@@ -51,9 +70,7 @@
       esc(board.desc || "") +
       "</p></div>" +
       (canWrite(board)
-        ? '<a class="btn btn--primary' +
-          (board.ownerOnly ? " owner-only" : "") +
-          '" href="' +
+        ? '<a class="btn btn--primary" href="' +
           root +
           "write.html?board=" +
           encodeURIComponent(board.id) +
@@ -212,8 +229,9 @@
   }
 
   function ownerBtns(p) {
+    if (!canDelete(p)) return "";
     return (
-      '<div class="row owner-only" style="margin-top:10px">' +
+      '<div class="row" style="margin-top:10px">' +
       '<button class="btn btn--sm btn--danger" data-del="' +
       esc(p.id) +
       '">삭제</button></div>'
@@ -222,6 +240,26 @@
 
   function emptyBox(board) {
     return '<div class="empty">아직 글이 없습니다.</div>';
+  }
+
+  // 글보기 하단 수정/삭제 버튼(권한에 따라)
+  function viewActions(board, p) {
+    var btns = "";
+    if (canEdit(p))
+      btns +=
+        '<a class="btn btn--sm" href="' +
+        root +
+        "write.html?board=" +
+        encodeURIComponent(board.id) +
+        "&id=" +
+        encodeURIComponent(p.id) +
+        '">수정</a>';
+    if (canDelete(p))
+      btns +=
+        '<button class="btn btn--sm btn--danger" data-del="' +
+        esc(p.id) +
+        '">삭제</button>';
+    return btns ? '<div class="article-actions">' + btns + "</div>" : "";
   }
 
   function bindGuestForm(board) {
@@ -233,11 +271,16 @@
       if (!msg) return;
       var status = document.getElementById("g-status");
       status.textContent = "남기는 중…";
+      var me = window.SQAuth && SQAuth.current();
       SQStore.savePost({
         board: board.id,
         title: "",
         html: "<p>" + esc(msg).replace(/\n/g, "<br>") + "</p>",
-        author: document.getElementById("g-name").value.trim() || "익명",
+        author:
+          document.getElementById("g-name").value.trim() ||
+          (me && me.displayName) ||
+          "익명",
+        authorId: me ? me.id : "",
         secret: document.getElementById("g-secret").checked,
         tags: []
       }).then(function () {
@@ -314,18 +357,7 @@
       '<div class="article-body">' +
       (p.html || "") +
       "</div>" +
-      '<div class="article-actions owner-only">' +
-      '<a class="btn btn--sm" href="' +
-      root +
-      "write.html?board=" +
-      encodeURIComponent(board.id) +
-      "&id=" +
-      encodeURIComponent(p.id) +
-      '">수정</a>' +
-      '<button class="btn btn--sm btn--danger" data-del="' +
-      esc(p.id) +
-      '">삭제</button>' +
-      "</div>" +
+      viewActions(board, p) +
       "</article>";
 
     mount.querySelectorAll("[data-del]").forEach(function (btn) {

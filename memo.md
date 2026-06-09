@@ -33,6 +33,13 @@
 8. Firebase 연동 + 튜토리얼 ✅ (docs/FIREBASE.md)
 9. 초보자용 한국어 주석/직관 구조 ✅
 
+## 2차 업데이트
+- 무한 로딩 수정: store.js withTimeout(5s) + app.js 로더 7s 안전장치, firebase-config 기본값을 빈 플레이스홀더로
+- 회원가입/로그인: auth.js(SQAuth) + account.html/account.js, users 노드
+- 등급/권한: 최고관리자/부관리자/회원 3단계 + 세분 권한(PERMS), 스킨 에디터 회원 탭
+- 권한 연동: write.js(작성/수정 가드·옵션), board.js(쓰기/수정/삭제·소유권), editor 탭별 권한
+- Firebase 연동 전용 파일 분리: db.js → firebase.js (config 는 firebase-config.js 한 곳)
+
 ## 다음 후보 작업
 - Firebase Auth(익명 로그인)로 방명록 쓰기 보안 강화
 - 댓글 기능, 검색/태그 필터

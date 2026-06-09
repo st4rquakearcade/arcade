@@ -20,6 +20,36 @@
     return !!(global.SQDb && global.SQDb.ready());
   }
 
+  /* Firebase 가 응답하지 않을 때 무한 대기를 막는 안전 타임아웃.
+   * 제한 시간 안에 안 오면 null 로 처리해 시드 파일로 넘어간다. */
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve) {
+      var done = false;
+      var t = setTimeout(function () {
+        if (!done) {
+          done = true;
+          resolve(null);
+        }
+      }, ms || 5000);
+      promise.then(
+        function (v) {
+          if (!done) {
+            done = true;
+            clearTimeout(t);
+            resolve(v);
+          }
+        },
+        function () {
+          if (!done) {
+            done = true;
+            clearTimeout(t);
+            resolve(null);
+          }
+        }
+      );
+    });
+  }
+
   /* /data/<node>.json 시드 읽기 (네트워크) */
   function fetchSeed(node) {
     return fetch(root + "data/" + node + ".json", { cache: "no-store" })
@@ -54,12 +84,13 @@
     if (cache[node] != null) return Promise.resolve(clone(cache[node]));
 
     if (usingFirebase()) {
-      return global.SQDb.fetch(node).then(function (val) {
+      // 타임아웃으로 감싸 무한 로딩을 방지한다.
+      return withTimeout(global.SQDb.fetch(node), 5000).then(function (val) {
         if (val != null) {
           cache[node] = val;
           return clone(val);
         }
-        // RTDB 가 비어 있으면 시드 파일로 첫 화면만 보여준다(쓰기는 RTDB 로 감).
+        // RTDB 가 비었거나 응답이 없으면 시드 파일로 첫 화면을 보여준다.
         return fetchSeed(node).then(function (seed) {
           cache[node] = seed;
           return clone(seed);
@@ -223,6 +254,17 @@
     return set("themes_custom", obj);
   }
 
+  /* ---------- users (회원) ----------
+   * { <userId>: { id, username, displayName, passHash, role, createdAt } } */
+  function getUsers() {
+    return get("users").then(function (u) {
+      return u && typeof u === "object" ? u : {};
+    });
+  }
+  function saveUsers(obj) {
+    return set("users", obj);
+  }
+
   /* 캐시 비우기(저장 후 다른 페이지에서 최신 데이터 보려고 할 때) */
   function flush(node) {
     if (node) delete cache[node];
@@ -244,6 +286,8 @@
     savePost: savePost,
     removePost: removePost,
     getCustomThemes: getCustomThemes,
-    saveCustomThemes: saveCustomThemes
+    saveCustomThemes: saveCustomThemes,
+    getUsers: getUsers,
+    saveUsers: saveUsers
   };
 })(window);

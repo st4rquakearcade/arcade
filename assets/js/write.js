@@ -25,6 +25,7 @@
   var draftKey = "sq:draft:" + boardId + ":" + (editId || "new");
   var sourceMode = false;
   var previewMode = false;
+  var loadedAuthorId = null; // 수정 시 원작성자 보존용
 
   /* ---------- 서식 명령 ---------- */
   function exec(cmd, val) {
@@ -232,6 +233,11 @@
     $("pw-wrap").style.display = $("ed-secret").checked ? "inline-flex" : "none";
   }
 
+  function hideOpt(id) {
+    var el = $(id);
+    if (el && el.closest("label")) el.closest("label").hidden = true;
+  }
+
   /* ---------- 저장 / 삭제 ---------- */
   function save() {
     var c = collect();
@@ -254,6 +260,10 @@
       password: c.secret ? c.password : ""
     };
     if (editId) post.id = editId;
+    // 작성자: 새 글은 현재 로그인 사용자, 수정은 원작성자 유지
+    var me = window.SQAuth ? SQAuth.current() : null;
+    post.authorId = loadedAuthorId || (me && me.id) || "";
+    if (me && !editId) post.author = post.author || me.displayName;
     status.textContent = "저장 중…";
     SQStore.savePost(post).then(function (saved) {
       clearDraft();
@@ -277,8 +287,28 @@
     });
   }
 
+  function denied(message) {
+    document.querySelector(".shell").innerHTML =
+      '<div class="empty">' +
+      esc(message) +
+      '<br><br><a class="btn" href="' +
+      root +
+      "account.html?next=" +
+      encodeURIComponent(location.pathname + location.search) +
+      '">로그인 하기</a></div>';
+  }
+
   /* ---------- 초기화 ---------- */
   function boot() {
+    // 로그인하지 않았으면 글쓰기 불가
+    if (!SQAuth.isLoggedIn() || !SQAuth.hasPerm("writeMember")) {
+      denied("글을 쓰려면 로그인이 필요합니다.");
+      return;
+    }
+    // 권한이 없으면 고정/비밀 옵션 숨김
+    if (!SQAuth.hasPerm("pin")) hideOpt("ed-pinned");
+    if (!SQAuth.hasPerm("secret")) hideOpt("ed-secret");
+
     SQStore.getBoards().then(function (boards) {
       var sel = $("ed-board");
       sel.innerHTML = boards
@@ -321,6 +351,14 @@
           status.textContent = "글을 찾지 못했습니다.";
           return;
         }
+        // 수정 권한: 모든 글 수정 권한이 있거나, 본인 글이어야 함
+        var me = SQAuth.current();
+        var own = me && p.authorId && p.authorId === me.id;
+        if (!SQAuth.hasPerm("editAny") && !(own && SQAuth.hasPerm("editOwn"))) {
+          denied("이 글을 수정할 권한이 없습니다.");
+          return;
+        }
+        loadedAuthorId = p.authorId || "";
         fill({
           board: p.board,
           title: p.title,
@@ -336,6 +374,8 @@
     } else {
       loadDraft();
       togglePwVisibility();
+      var me = SQAuth.current();
+      if (me && !$("ed-author").value) $("ed-author").value = me.displayName;
     }
   }
 

@@ -12,8 +12,9 @@ HTML · CSS · GSAP · JSON 기반의 **정적 개인 홈페이지**입니다.
 - ✍️ **글쓰기 에디터** — 서식·정렬·색·표·이미지·링크·코드블록, **HTML 소스 편집**, **미리보기**, **자동 임시저장**, **비밀글 / 고정글 / 수정 / 삭제**
 - 🧩 **스킨 에디터** — 사이트 설정·테마·게시판을 코딩 없이 편집, **프리셋 백업(내보내기/가져오기)**
 - 🆕 **게시판 자동화** — 게시판을 만들면 **용도에 맞춘 전용 HTML 파일을 자동 생성**해 내려받기
-- 🔥 **Firebase 연동(선택)** — 연결하면 RTDB, 아니면 localStorage로 폴백
-- 🔒 **주인 모드(PIN)** — 잠금을 풀면 글쓰기/편집/스킨 버튼이 나타남
+- 👥 **회원 / 등급 시스템** — 회원가입·로그인 + 3등급(**최고 관리자·부관리자·회원**) 권한 세분화
+- 🔥 **Firebase 연동(선택)** — 키 한 곳(`firebase-config.js`)만 채우면 RTDB, 비우면 localStorage 폴백
+- 🧱 **Firebase 연동 전용 파일 분리** — 모든 Firebase 코드는 `assets/js/firebase.js` 한 곳에
 
 ## 기본 게시판
 
@@ -34,10 +35,17 @@ HTML · CSS · GSAP · JSON 기반의 **정적 개인 홈페이지**입니다.
    # 브라우저에서 http://localhost:8000
    ```
    `fetch` 때문에 파일을 더블클릭(file://)하면 데이터가 안 보일 수 있으니 위처럼 서버로 여세요.
-2. 우측 상단 **⌥** 버튼 → 주인 PIN 입력(기본 `0000`) → 주인 모드 진입
+2. 우측 상단 **로그인** → **회원가입** (첫 가입자가 자동으로 **최고 관리자**가 됩니다)
 3. **⚙ 스킨** 에서 제목·테마·게시판을 바꾸고 **저장**
 4. **＋ 글쓰기** 로 글 작성
 5. 배포 & 공유는 [`docs/FIREBASE.md`](docs/FIREBASE.md) 참고
+
+### 등급별 권한
+| 등급 | 권한 |
+|------|------|
+| 최고 관리자 | 모든 권한 — 회원 관리·사이트 설정·테마·게시판·모든 글 |
+| 부관리자 | 게시판 관리 + 모든 글 작성·수정·삭제·고정 (회원/사이트 설정 제외) |
+| 회원 | 본인 글 작성·수정·삭제, 방명록 작성 |
 
 ## 폴더 구조
 
@@ -45,11 +53,14 @@ HTML · CSS · GSAP · JSON 기반의 **정적 개인 홈페이지**입니다.
 index.html        대문(카드 스택)
 board.html        만능 게시판 (?board=id, ?id=글)
 write.html        글쓰기 에디터
-editor.html       스킨 에디터
+editor.html       스킨 에디터 (+ 회원 관리)
+account.html      로그인 / 회원가입 / 프로필
 seed.html         Firebase 첫 데이터 업로드 도구
 data/             site / boards / posts / themes (JSON 시드) — 직접 고쳐도 됨
 assets/css/       tokens·base·layout + 페이지별 css
-assets/js/        store(데이터) · theme · app · home · board · write · skin · db · imgcompress
+assets/js/        store · theme · app · auth · home · board · write · skin · account · imgcompress
+assets/js/firebase-config.js   Firebase 키 (여기만 고침)
+assets/js/firebase.js          Firebase 연동 전용 모듈
 docs/FIREBASE.md  배포 튜토리얼
 ```
 

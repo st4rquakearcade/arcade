@@ -3,10 +3,8 @@
  * ---------------------------------------------------------------------
  *  · 테마 적용
  *  · 게시판 목록으로 내비게이션 자동 생성
- *  · "주인 모드"(PIN) : 잠금 해제하면 글쓰기/편집/스킨 버튼이 보입니다.
- *  · 맨 위로 버튼, 펼침(fold) 토글
- *  주인 모드는 화면 잠금일 뿐 진짜 보안이 아닙니다.
- *  실제 보안은 Firebase 규칙으로 합니다(docs/FIREBASE.md 참고).
+ *  · 로그인 상태/등급에 따라 메뉴(글쓰기·스킨·회원관리·로그인) 표시
+ *  · 로더(무한 로딩) 안전장치
  * ===================================================================== */
 (function (global) {
   "use strict";
@@ -19,36 +17,29 @@
     });
   }
 
-  /* ---------- 주인 모드 ---------- */
-  function isOwner() {
-    try {
-      return sessionStorage.getItem("sq:owner") === "1";
-    } catch (e) {
-      return false;
-    }
+  function auth() {
+    return global.SQAuth;
   }
-  function setOwner(on) {
-    try {
-      if (on) sessionStorage.setItem("sq:owner", "1");
-      else sessionStorage.removeItem("sq:owner");
-    } catch (e) {}
-    document.body.classList.toggle("is-owner", !!on);
+  function hasPerm(p) {
+    return auth() ? SQAuth.hasPerm(p) : false;
   }
-  function toggleOwner() {
-    if (isOwner()) {
-      setOwner(false);
-      return;
-    }
-    SQStore.getSite().then(function (site) {
-      var pin = (site.owner && site.owner.pin) || "";
-      if (!pin) {
-        setOwner(true); // PIN 미설정이면 바로 주인 모드
-        return;
-      }
-      var input = window.prompt("주인 PIN을 입력하세요");
-      if (input == null) return;
-      if (input === String(pin)) setOwner(true);
-      else window.alert("PIN이 일치하지 않습니다.");
+
+  /* 로그인 상태를 <body> 클래스로 반영 (CSS 에서 표시 제어) */
+  function applyAuthClasses() {
+    var b = document.body;
+    var loggedIn = auth() && SQAuth.isLoggedIn();
+    b.classList.toggle("is-auth", !!loggedIn);
+    b.classList.toggle("is-admin", auth() ? SQAuth.isAdmin() : false);
+    b.classList.toggle("is-owner", hasPerm("manageSite")); // 기존 owner-only 호환
+    ["superadmin", "subadmin", "member"].forEach(function (r) {
+      b.classList.toggle("role-" + r, loggedIn && SQAuth.role() === r);
+    });
+  }
+
+  /* data-perm 속성을 가진 요소를 권한에 따라 보이거나 숨김 */
+  function applyPerms(scope) {
+    (scope || document).querySelectorAll("[data-perm]").forEach(function (el) {
+      el.hidden = !hasPerm(el.getAttribute("data-perm"));
     });
   }
 
@@ -69,7 +60,7 @@
             esc(href) +
             '"' +
             cls +
-            "><span class=\"nav-ico\">" +
+            '><span class="nav-ico">' +
             esc(b.icon || "·") +
             "</span>" +
             esc(b.name) +
@@ -78,22 +69,50 @@
         })
         .join("");
 
-      var tools =
-        '<span class="nav-tools">' +
-        '<a class="owner-only" href="' +
-        root +
-        'write.html">＋ 글쓰기</a>' +
-        '<a class="owner-only" href="' +
-        root +
-        'editor.html">⚙ 스킨</a>' +
-        '<button type="button" id="owner-toggle" class="nav-lock" title="주인 모드">⌥</button>' +
-        "</span>";
+      mount.innerHTML =
+        '<div class="nav-links">' + links + "</div>" + navTools();
 
-      mount.innerHTML = '<div class="nav-links">' + links + "</div>" + tools;
-
-      var lock = document.getElementById("owner-toggle");
-      if (lock) lock.addEventListener("click", toggleOwner);
+      bindNavTools();
     });
+  }
+
+  function navTools() {
+    var loggedIn = auth() && SQAuth.isLoggedIn();
+    var html = '<span class="nav-tools">';
+    if (loggedIn) {
+      var u = SQAuth.current();
+      // 글쓰기: 회원 이상
+      if (hasPerm("writeMember"))
+        html += '<a href="' + root + 'write.html">＋ 글쓰기</a>';
+      // 스킨: 사이트 관리 권한
+      if (hasPerm("manageSite"))
+        html += '<a href="' + root + 'editor.html">⚙ 스킨</a>';
+      // 회원관리: 최고 관리자
+      if (hasPerm("manageUsers"))
+        html += '<a href="' + root + 'editor.html#users">👥 회원</a>';
+      html +=
+        '<a href="' +
+        root +
+        'account.html" class="nav-user" title="' +
+        esc(SQAuth.ROLE_LABEL[u.role] || "") +
+        '">' +
+        esc(u.displayName) +
+        "</a>";
+      html += '<button type="button" id="logout-btn" class="nav-lock" title="로그아웃">⏻</button>';
+    } else {
+      html += '<a href="' + root + 'account.html">로그인</a>';
+    }
+    html += "</span>";
+    return html;
+  }
+
+  function bindNavTools() {
+    var out = document.getElementById("logout-btn");
+    if (out)
+      out.addEventListener("click", function () {
+        SQAuth.logout();
+        location.reload();
+      });
   }
 
   /* ---------- 공통 UI ---------- */
@@ -112,13 +131,15 @@
 
   function hideLoader() {
     var l = document.getElementById("loader");
-    if (l) setTimeout(function () {
-      l.classList.add("is-done");
-    }, 200);
+    if (l) l.classList.add("is-done");
   }
 
   function boot() {
-    setOwner(isOwner());
+    applyAuthClasses();
+
+    // 안전장치: 무슨 일이 있어도 7초 뒤에는 로더를 끈다.
+    var safety = setTimeout(hideLoader, 7000);
+
     var active =
       (document.getElementById("site-nav") &&
         document.getElementById("site-nav").getAttribute("data-active")) ||
@@ -126,17 +147,28 @@
     var p = global.SQTheme ? SQTheme.init() : Promise.resolve();
     p.then(function () {
       return buildNav(active);
-    }).then(function () {
-      initScrollTop();
-      hideLoader();
-    });
+    })
+      .then(function () {
+        applyPerms();
+        initScrollTop();
+      })
+      .catch(function () {})
+      .then(function () {
+        clearTimeout(safety);
+        hideLoader();
+      });
   }
 
   global.SQApp = {
     esc: esc,
     root: root,
-    isOwner: isOwner,
-    setOwner: setOwner
+    hasPerm: hasPerm,
+    applyPerms: applyPerms,
+    applyAuthClasses: applyAuthClasses,
+    // 하위 호환: 예전 코드가 isOwner 를 부를 수 있어 유지
+    isOwner: function () {
+      return hasPerm("manageSite") || hasPerm("editAny");
+    }
   };
 
   if (document.readyState === "loading") {

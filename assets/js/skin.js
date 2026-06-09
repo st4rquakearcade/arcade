@@ -41,21 +41,30 @@
   };
 
   /* ---------- 탭 ---------- */
+  function selectTab(name) {
+    document.querySelectorAll(".skin-tabs button").forEach(function (x) {
+      x.classList.toggle("is-on", x.dataset.tab === name);
+    });
+    document.querySelectorAll(".skin-panel").forEach(function (x) {
+      x.classList.toggle("is-on", x.id === "panel-" + name);
+    });
+  }
+
   function bindTabs() {
+    var firstVisible = null;
     document.querySelectorAll(".skin-tabs button").forEach(function (b) {
+      var perm = b.getAttribute("data-perm");
+      // 권한 없는 탭은 숨김
+      if (perm && !SQAuth.hasPerm(perm)) {
+        b.hidden = true;
+        return;
+      }
+      if (!firstVisible) firstVisible = b.dataset.tab;
       b.addEventListener("click", function () {
-        document
-          .querySelectorAll(".skin-tabs button")
-          .forEach(function (x) {
-            x.classList.remove("is-on");
-          });
-        document.querySelectorAll(".skin-panel").forEach(function (x) {
-          x.classList.remove("is-on");
-        });
-        b.classList.add("is-on");
-        $("panel-" + b.dataset.tab).classList.add("is-on");
+        selectTab(b.dataset.tab);
       });
     });
+    if (firstVisible) selectTab(firstVisible);
   }
 
   /* ---------- 1) 사이트 ---------- */
@@ -66,7 +75,6 @@
     $("s-desc").value = s.description || "";
     $("s-image").value = s.image || "";
     $("s-footer").value = s.footer || "";
-    $("s-pin").value = (s.owner && s.owner.pin) || "";
   }
   function collectSite() {
     var s = state.site;
@@ -77,8 +85,6 @@
     s.description = $("s-desc").value.trim();
     s.image = $("s-image").value.trim();
     s.footer = $("s-footer").value.trim();
-    s.owner = s.owner || {};
-    s.owner.pin = $("s-pin").value.trim();
     s.theme = state.currentTheme;
     return s;
   }
@@ -418,8 +424,9 @@
       JSON.stringify(b.id) +
       ";</script>\n" +
       '  <script defer src="assets/js/firebase-config.js"></script>\n' +
-      '  <script defer src="assets/js/db.js"></script>\n' +
+      '  <script defer src="assets/js/firebase.js"></script>\n' +
       '  <script defer src="assets/js/store.js"></script>\n' +
+      '  <script defer src="assets/js/auth.js"></script>\n' +
       '  <script defer src="assets/js/theme.js"></script>\n' +
       '  <script defer src="assets/js/app.js"></script>\n' +
       '  <script defer src="assets/js/board.js"></script>\n' +
@@ -442,6 +449,78 @@
       "</body>\n" +
       "</html>\n"
     );
+  }
+
+  /* ---------- 회원 관리 ---------- */
+  function renderUsers() {
+    var box = $("user-list");
+    if (!box || !SQAuth.hasPerm("manageUsers")) return;
+    SQAuth.listUsers().then(function (users) {
+      var me = SQAuth.current();
+      users.sort(function (a, b) {
+        return SQAuth.ROLES.indexOf(a.role) - SQAuth.ROLES.indexOf(b.role);
+      });
+      box.innerHTML = users
+        .map(function (u) {
+          return (
+            '<div class="board-row" data-uid="' +
+            esc(u.id) +
+            '">' +
+            '<div class="ico">' +
+            esc((u.displayName || "?").slice(0, 1)) +
+            "</div>" +
+            "<div><b>" +
+            esc(u.displayName) +
+            "</b><br><span class=\"muted\" style=\"font-size:.78rem\">@" +
+            esc(u.username) +
+            (u.id === me.id ? " (나)" : "") +
+            "</span></div>" +
+            '<select data-role>' +
+            SQAuth.ROLES.map(function (r) {
+              return (
+                '<option value="' +
+                r +
+                '"' +
+                (u.role === r ? " selected" : "") +
+                ">" +
+                SQAuth.ROLE_LABEL[r] +
+                "</option>"
+              );
+            }).join("") +
+            "</select>" +
+            "<div></div>" +
+            '<div class="ops"><button class="btn btn--sm btn--danger" type="button" data-rmuser>삭제</button></div>' +
+            "</div>"
+          );
+        })
+        .join("");
+
+      box.querySelectorAll(".board-row").forEach(function (row) {
+        var uid = row.dataset.uid;
+        row.querySelector("[data-role]").addEventListener("change", function () {
+          var v = this.value;
+          SQAuth.setRole(uid, v)
+            .then(function () {
+              toast("등급이 변경되었습니다.");
+              SQApp.applyAuthClasses();
+            })
+            .catch(function (e) {
+              window.alert(e.message);
+              renderUsers();
+            });
+        });
+        row.querySelector("[data-rmuser]").addEventListener("click", function () {
+          if (!window.confirm("이 회원을 삭제할까요?")) return;
+          SQAuth.removeUser(uid)
+            .then(function () {
+              renderUsers();
+            })
+            .catch(function (e) {
+              window.alert(e.message);
+            });
+        });
+      });
+    });
   }
 
   /* ---------- 4) 백업 ---------- */
@@ -496,12 +575,12 @@
   /* ---------- 저장 ---------- */
   function saveEverything() {
     reorder();
-    Promise.all([
-      SQStore.saveSite(collectSite()),
-      SQStore.saveBoards(state.boards)
-    ]).then(function () {
+    var jobs = [SQStore.saveBoards(state.boards)];
+    // 사이트/테마 변경 저장은 사이트 관리 권한이 있을 때만
+    if (SQAuth.hasPerm("manageSite")) jobs.push(SQStore.saveSite(collectSite()));
+    Promise.all(jobs).then(function () {
       SQStore.flush();
-      SQTheme.apply(state.currentTheme);
+      if (SQAuth.hasPerm("manageSite")) SQTheme.apply(state.currentTheme);
       toast("저장되었습니다.");
     });
   }
@@ -516,6 +595,18 @@
 
   /* ---------- 부트 ---------- */
   function boot() {
+    // 접근 권한: 게시판 관리 권한(부관리자 이상)이 있어야 에디터 진입.
+    if (!SQAuth.hasPerm("manageBoards")) {
+      document.querySelector(".shell").innerHTML =
+        '<div class="empty">스킨 에디터는 관리자만 사용할 수 있습니다.<br><br>' +
+        '<a class="btn" href="' +
+        root +
+        'account.html?next=' +
+        encodeURIComponent(location.pathname) +
+        '">로그인 하기</a></div>';
+      return;
+    }
+
     bindTabs();
     $("btn-save-all").addEventListener("click", saveEverything);
     $("save-theme").addEventListener("click", saveCustomTheme);
@@ -546,6 +637,12 @@
         renderThemeGrid();
         selectTheme(state.currentTheme);
         renderBoards();
+        renderUsers();
+        // account.html 등에서 #users 로 들어오면 회원 탭 열기
+        if (location.hash === "#users") {
+          var ub = document.querySelector('.skin-tabs [data-tab="users"]');
+          if (ub) ub.click();
+        }
       }
     );
   }
