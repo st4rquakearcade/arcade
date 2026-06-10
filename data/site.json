@@ -5,6 +5,8 @@
   "image": "",
   "theme": "cosmos",
   "fonts": { "display": "", "body": "" },
+  "homeLayout": "masonry",
+  "homeOrder": [],
   "footer": "© STARQUAKE ARCADE",
   "owner": {
     "pin": "0000"

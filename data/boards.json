@@ -3,7 +3,7 @@
     "id": "home",
     "name": "대문",
     "type": "intro",
-    "icon": "◇",
+    "icon": "home",
     "desc": "",
     "order": 0,
     "ownerOnly": true
@@ -12,7 +12,7 @@
     "id": "notice",
     "name": "공지",
     "type": "list",
-    "icon": "!",
+    "icon": "bell",
     "desc": "",
     "order": 1,
     "ownerOnly": true
@@ -21,7 +21,7 @@
     "id": "free",
     "name": "자유",
     "type": "list",
-    "icon": "#",
+    "icon": "hash",
     "desc": "",
     "order": 2,
     "ownerOnly": false
@@ -30,7 +30,7 @@
     "id": "memo",
     "name": "메모",
     "type": "stream",
-    "icon": "·",
+    "icon": "note",
     "desc": "",
     "order": 3,
     "ownerOnly": true
@@ -39,7 +39,7 @@
     "id": "guest",
     "name": "방명록",
     "type": "guest",
-    "icon": "♥",
+    "icon": "heart",
     "desc": "",
     "order": 4,
     "ownerOnly": false
@@ -48,7 +48,7 @@
     "id": "banner",
     "name": "배너",
     "type": "banner",
-    "icon": "▤",
+    "icon": "grid",
     "desc": "",
     "order": 5,
     "ownerOnly": true

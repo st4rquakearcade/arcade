@@ -14,9 +14,11 @@
     matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function initSmoothScroll() {
-    if (reduced || !global.Lenis) return null;
+    // 부드러운 관성 스크롤(Lenis)은 느리다는 피드백으로 기본 비활성화.
+    // 다시 켜고 싶으면 window.SQ_SMOOTH = true 로 설정.
+    if (reduced || !global.Lenis || !global.SQ_SMOOTH) return null;
     try {
-      var lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+      var lenis = new Lenis({ duration: 0.7, smoothWheel: true });
       function raf(t) {
         lenis.raf(t);
         requestAnimationFrame(raf);

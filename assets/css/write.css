@@ -24,7 +24,7 @@
 /* 툴바 */
 .toolbar {
   position: sticky;
-  top: var(--nav-h);
+  top: 0;
   z-index: 20;
   display: flex;
   flex-wrap: wrap;

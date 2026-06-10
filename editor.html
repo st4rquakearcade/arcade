@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="assets/css/tokens.css" />
     <link rel="stylesheet" href="assets/css/base.css" />
     <link rel="stylesheet" href="assets/css/layout.css" />
+    <link rel="stylesheet" href="assets/css/icons.css" />
     <link rel="stylesheet" href="assets/css/skin.css" />
 
     <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -19,6 +20,7 @@
     <script defer src="assets/js/auth.js"></script>
     <script defer src="assets/js/fonts.js"></script>
     <script defer src="assets/js/theme.js"></script>
+    <script defer src="assets/js/icons.js"></script>
     <script defer src="assets/js/app.js"></script>
     <script defer src="assets/js/skin.js"></script>
   </head>
@@ -72,6 +74,14 @@
             <input id="s-footer" type="text" />
           </div>
         </div>
+        <div class="field" style="max-width: 280px">
+          <label>대문 레이아웃 (카드 배치)</label>
+          <select id="s-homelayout">
+            <option value="masonry">메이슨리 — 빽빽이 쌓임</option>
+            <option value="bento">벤토 — 드래그로 배치</option>
+            <option value="grid">그리드 — 균일한 칸</option>
+          </select>
+        </div>
       </section>
 
       <!-- 2) 테마 -->
@@ -113,9 +123,9 @@
             <select id="nb-type"></select>
             <select id="nb-view"></select>
           </div>
-          <div class="field-grid" style="margin-top: 8px">
-            <input id="nb-icon" type="text" placeholder="아이콘 (예: ◆)" />
-            <span></span>
+          <div class="row" style="margin-top: 8px; gap: 8px">
+            <span class="muted" style="font-size: 0.82rem">아이콘</span>
+            <button id="nb-icon" class="icon-pick" type="button"></button>
           </div>
           <label class="row" style="margin: 8px 0; gap: 16px">
             <span class="row" style="margin: 0"><input type="checkbox" id="nb-owner" style="width: auto" /> 관리자만 글쓰기</span>

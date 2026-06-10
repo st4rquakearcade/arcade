@@ -51,6 +51,16 @@
   버튼 "게시판 생성"(자동 다운로드 제거, ⬇는 행별 버튼)
 - 포인트색(--accent)·테두리두께(--border-w)·폰트 토큰을 base/layout/home/board 에 반영
 
+## 4차 업데이트 (사이드바 + 카드월 + 아이콘)
+- 좌측 사이드바 내비: 브랜드→카테고리→도구(스킨/글쓰기/회원/로그인), 모바일 슬라이드 + 토글
+- 스크롤 느림 수정: Lenis 기본 비활성(window.SQ_SMOOTH 로만 활성)
+- 대문 카드월 3레이아웃: masonry/bento(드래그 배치, site.homeOrder)/grid, 스킨 에디터 사이트탭에서 전환(site.homeLayout)
+- 게시판도 대문식: 보기형태에 masonry 추가(.list-masonry)
+- SVG 아이콘 56개(icons.js) + 공용 드롭다운 선택기(attachPicker) + icons.css
+  · 내비/대문카드/게시판 아이콘에 적용, 스킨 에디터 게시판 아이콘 선택기
+  · boards.json 아이콘을 이름(home/bell/hash/note/heart/grid)으로
+- 생성 HTML 템플릿에 icons/anim 포함
+
 ## 다음 후보 작업
 - Firebase Auth(익명 로그인)로 방명록 쓰기 보안 강화
 - 댓글 기능, 검색/태그 필터

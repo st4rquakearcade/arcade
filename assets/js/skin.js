@@ -46,7 +46,8 @@
     cards: "카드",
     compact: "목록",
     magazine: "매거진",
-    grid: "그리드"
+    grid: "그리드",
+    masonry: "메이슨리"
   };
 
   // data-f 셀렉트 HTML 생성
@@ -107,6 +108,7 @@
     $("s-desc").value = s.description || "";
     $("s-image").value = s.image || "";
     $("s-footer").value = s.footer || "";
+    if ($("s-homelayout")) $("s-homelayout").value = s.homeLayout || "masonry";
   }
   function collectSite() {
     var s = state.site;
@@ -117,6 +119,7 @@
     s.description = $("s-desc").value.trim();
     s.image = $("s-image").value.trim();
     s.footer = $("s-footer").value.trim();
+    if ($("s-homelayout")) s.homeLayout = $("s-homelayout").value;
     s.theme = state.currentTheme;
     return s;
   }
@@ -273,9 +276,7 @@
           '<div class="board-row" data-i="' +
           i +
           '">' +
-          '<input class="ico" data-f="icon" value="' +
-          esc(b.icon || "") +
-          '" title="아이콘" />' +
+          '<button class="icon-pick" type="button" data-pick title="아이콘"></button>' +
           '<input data-f="name" value="' +
           esc(b.name || "") +
           '" placeholder="이름" />' +
@@ -313,6 +314,12 @@
             inp.type === "checkbox" ? inp.checked : inp.value.trim();
         });
       });
+      // 아이콘 SVG 선택기
+      var pick = row.querySelector("[data-pick]");
+      if (pick && window.SQIcons)
+        SQIcons.attachPicker(pick, state.boards[i].icon, function (name) {
+          state.boards[i].icon = name;
+        });
       row.querySelector("[data-up]").addEventListener("click", function () {
         move(i, -1);
       });
@@ -369,7 +376,7 @@
       name: name,
       type: $("nb-type").value,
       view: $("nb-view").value,
-      icon: $("nb-icon").value.trim() || "·",
+      icon: ($("nb-icon") && $("nb-icon").dataset.value) || "note",
       desc: "",
       ownerOnly: $("nb-owner").checked,
       membersOnly: $("nb-members").checked,
@@ -438,6 +445,7 @@
       '  <link rel="stylesheet" href="assets/css/tokens.css" />\n' +
       '  <link rel="stylesheet" href="assets/css/base.css" />\n' +
       '  <link rel="stylesheet" href="assets/css/layout.css" />\n' +
+      '  <link rel="stylesheet" href="assets/css/icons.css" />\n' +
       '  <link rel="stylesheet" href="assets/css/board.css" />\n' +
       "\n" +
       '  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>\n' +
@@ -455,6 +463,7 @@
       '  <script defer src="assets/js/auth.js"></script>\n' +
       '  <script defer src="assets/js/fonts.js"></script>\n' +
       '  <script defer src="assets/js/theme.js"></script>\n' +
+      '  <script defer src="assets/js/icons.js"></script>\n' +
       '  <script defer src="assets/js/app.js"></script>\n' +
       '  <script defer src="assets/js/anim.js"></script>\n' +
       '  <script defer src="assets/js/board.js"></script>\n' +
@@ -696,6 +705,8 @@
         return '<option value="' + v + '">' + VIEWS[v] + " 보기</option>";
       })
       .join("");
+    if ($("nb-icon") && window.SQIcons)
+      SQIcons.attachPicker($("nb-icon"), "note", function () {});
 
     Promise.all([SQStore.getSite(), SQStore.getBoards(), SQTheme.all()]).then(
       function (r) {

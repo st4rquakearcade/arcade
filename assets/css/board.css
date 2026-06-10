@@ -28,6 +28,21 @@
   gap: var(--gap-2);
 }
 
+/* 메이슨리(대문식 빽빽 카드) */
+.list-masonry {
+  columns: 3 260px;
+  column-gap: var(--gap-2);
+}
+.list-masonry .post-item {
+  break-inside: avoid;
+  margin-bottom: var(--gap-2);
+}
+.list-masonry .mz-img {
+  width: 100%;
+  border-radius: var(--r-1);
+  margin-bottom: 10px;
+}
+
 /* 조밀한 목록 */
 .list-compact {
   border-top: var(--border-w) solid var(--line);

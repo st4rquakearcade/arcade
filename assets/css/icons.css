@@ -1,0 +1,78 @@
+/* =====================================================================
+ * icons.css — SVG 아이콘 표시 + 드롭다운 선택기
+ * ===================================================================== */
+.sqi {
+  display: inline-block;
+  vertical-align: -0.15em;
+}
+
+/* 선택기 트리거 버튼 */
+.icon-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: auto;
+  padding: 6px 8px;
+  background: var(--surface);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--r-1);
+  color: var(--text);
+  cursor: pointer;
+}
+.icon-pick .sqi {
+  width: 18px;
+  height: 18px;
+}
+.icon-pick .cap {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+.icon-pick:hover {
+  border-color: var(--accent);
+}
+
+/* 팝업 */
+.icon-pop {
+  position: absolute;
+  z-index: 200;
+  width: 280px;
+  max-height: 320px;
+  display: none;
+  flex-direction: column;
+  background: var(--surface-2);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--r-2);
+  box-shadow: var(--shadow);
+  padding: 10px;
+  gap: 8px;
+}
+.icon-pop.open {
+  display: flex;
+}
+.icon-pop-search {
+  width: 100%;
+}
+.icon-pop-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  overflow-y: auto;
+}
+.icon-opt {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  border: var(--border-w) solid transparent;
+  border-radius: var(--r-1);
+  color: var(--text);
+  cursor: pointer;
+}
+.icon-opt .sqi {
+  width: 20px;
+  height: 20px;
+}
+.icon-opt:hover {
+  border-color: var(--accent);
+  background: var(--bg);
+}

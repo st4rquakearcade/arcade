@@ -1,30 +1,26 @@
 /* =====================================================================
- * home.css — 대문: 중앙 단일 컬럼 + 카드 스택 (carrd / linktree 구조)
- * ---------------------------------------------------------------------
- * 화면 중앙에 좁은 컬럼: 프로필(아바타·이름·소개) → 링크 카드가 세로로 쌓임.
+ * home.css — 대문: 넓은 카드 월 (3가지 레이아웃 전환)
+ *   · masonry : 높이 다른 카드가 알아서 빽빽이 쌓임(핀터레스트)
+ *   · bento   : 그리드에 빽빽이 채워지고 주인이 드래그로 배치
+ *   · grid    : 같은 칸 균일 그리드
  * ===================================================================== */
-.bio {
-  min-height: calc(100vh - var(--nav-h));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--gap-4);
-  max-width: 480px;
+.home-wrap {
+  max-width: 1100px;
   margin: 0 auto;
-  padding: var(--gap-5) var(--gap-3);
-  text-align: center;
+  padding: var(--gap-4) var(--gap-3) var(--gap-5);
 }
 
-/* 프로필 */
-.bio-profile {
+/* 상단 프로필(작게, 좌측) */
+.home-hero {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: var(--gap-3);
+  margin-bottom: var(--gap-4);
 }
-.bio-avatar {
-  width: 92px;
-  height: 92px;
+.home-hero .avatar {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
   border-radius: 50%;
   overflow: hidden;
   background: var(--surface-2);
@@ -32,99 +28,147 @@
   display: grid;
   place-items: center;
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.4rem;
   color: var(--text-dim);
-  margin-bottom: var(--gap-3);
-  box-shadow: var(--shadow);
 }
-.bio-avatar img {
+.home-hero .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.bio-handle {
+.home-hero .handle {
   color: var(--accent);
-  font-size: 0.76rem;
-  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  margin: 0 0 4px;
+  margin: 0;
 }
-.bio-name {
-  font-size: clamp(1.7rem, 5vw, 2.4rem);
-  line-height: 1.1;
-  margin: 0 0 var(--gap-2);
+.home-hero h1 {
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  margin: 2px 0 4px;
 }
-.bio-desc {
+.home-hero .desc {
   color: var(--text-dim);
-  font-size: 0.95rem;
-  max-width: 40ch;
+  font-size: 0.9rem;
   margin: 0;
 }
 
-/* 링크 카드 스택 */
-.link-stack {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-2);
-}
-.link-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 16px 18px;
+/* 카드 공통 */
+.home-card {
   background: var(--surface);
   border: var(--border-w) solid var(--line);
   border-radius: var(--r-2);
-  color: var(--text);
-  text-align: left;
   box-shadow: var(--shadow);
-  transition: transform 0.18s var(--ease), border-color 0.18s var(--ease),
-    background 0.18s var(--ease);
+  overflow: hidden;
+  transition: transform 0.18s var(--ease), border-color 0.18s var(--ease);
 }
-.link-card:hover {
+.home-card > a {
+  display: block;
+  height: 100%;
+  padding: var(--gap-3);
+  color: var(--text);
+}
+.home-card:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
-  background: var(--surface-2);
 }
-.link-card .lc-ico {
+.hc-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.hc-ico {
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
   display: grid;
   place-items: center;
   border-radius: var(--r-1);
   background: var(--bg);
   border: var(--border-w) solid var(--line);
-  font-size: 1.1rem;
 }
-.link-card .lc-text {
-  flex: 1;
-  min-width: 0;
+.hc-ico .sqi {
+  width: 20px;
+  height: 20px;
 }
-.link-card .lc-name {
-  font-weight: 600;
-  font-size: 1rem;
+.hc-head h2 {
+  font-size: 1.15rem;
+  margin: 0;
 }
-.link-card .lc-sub {
+.hc-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+}
+.hc-list li {
+  padding: 7px 0;
+  border-top: var(--border-w) solid var(--line);
   color: var(--text-dim);
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.link-card .lc-arrow {
-  flex-shrink: 0;
+.hc-go {
   color: var(--text-dim);
-  transition: transform 0.18s var(--ease), color 0.18s var(--ease);
+  font-size: 0.82rem;
 }
-.link-card:hover .lc-arrow {
+.home-card:hover .hc-go {
   color: var(--accent);
-  transform: translate(2px, -2px);
 }
 
-.bio-foot {
+/* ---- masonry : CSS 다중 컬럼 ---- */
+.home-masonry {
+  columns: 3 280px;
+  column-gap: var(--gap-2);
+}
+.home-masonry .home-card {
+  break-inside: avoid;
+  margin-bottom: var(--gap-2);
+}
+
+/* ---- grid : 균일 ---- */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--gap-2);
+}
+
+/* ---- bento : 빽빽이 채우는 그리드 (드래그 배치) ---- */
+.home-bento {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-auto-rows: 14px;
+  grid-auto-flow: row dense;
+  gap: var(--gap-2);
+}
+.home-bento .home-card {
+  grid-row: span 12;
+}
+.home-bento .home-card[data-size="s"] {
+  grid-row: span 9;
+}
+.home-bento .home-card[data-size="l"] {
+  grid-column: span 2;
+  grid-row: span 16;
+}
+.home-bento .home-card.dragging {
+  opacity: 0.4;
+}
+.home-bento .home-card.drag-over {
+  border-color: var(--accent);
+}
+body.is-owner .home-bento .home-card {
+  cursor: grab;
+}
+body.is-owner .home-bento .home-card:active {
+  cursor: grabbing;
+}
+.bento-hint {
+  font-size: 0.78rem;
   color: var(--text-dim);
-  font-size: 0.76rem;
+  margin-bottom: var(--gap-2);
 }

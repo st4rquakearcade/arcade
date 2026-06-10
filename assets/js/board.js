@@ -99,6 +99,7 @@
     if (view === "compact") return renderCompact(board, posts);
     if (view === "magazine") return renderMagazine(board, posts);
     if (view === "grid") return renderGrid(board, posts);
+    if (view === "masonry") return renderMasonry(board, posts);
     return renderCards(board, posts);
   }
 
@@ -155,6 +156,35 @@
                 (isLocked(p)
                   ? ""
                   : '<p class="excerpt">' + esc(strip(p.html)) + "</p>")
+            ) +
+            "</article>"
+          );
+        })
+        .join("") +
+      "</div>"
+    );
+  }
+
+  /* 보기: 메이슨리(대문과 비슷한 빽빽 카드) */
+  function renderMasonry(board, posts) {
+    return (
+      '<div class="list-masonry">' +
+      posts
+        .map(function (p) {
+          var img = isLocked(p) ? "" : firstImg(p.html);
+          return (
+            '<article class="card post-item" data-reveal>' +
+            postLink(
+              board,
+              p,
+              (img
+                ? '<img class="mz-img" src="' + esc(img) + '" alt="">'
+                : "") +
+                "<h3>" + (p.pinned ? "📌 " : "") + secretTitle(p) + "</h3>" +
+                meta(p) +
+                (isLocked(p)
+                  ? ""
+                  : '<p class="excerpt">' + esc(strip(p.html, 140)) + "</p>")
             ) +
             "</article>"
           );

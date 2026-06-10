@@ -44,67 +44,86 @@
     });
   }
 
-  /* ---------- 내비게이션 ---------- */
+  /* 아이콘 렌더(이름이면 SVG, 아니면 텍스트) */
+  function ico(name) {
+    if (global.SQIcons && SQIcons.has(name)) return SQIcons.svg(name);
+    return esc(name || "·");
+  }
+
+  /* ---------- 좌측 사이드바 ---------- */
+  function navLink(href, iconName, label, active, extraCls) {
+    return (
+      '<a href="' +
+      esc(href) +
+      '"' +
+      (active ? ' class="is-active ' + (extraCls || "") + '"' : extraCls ? ' class="' + extraCls + '"' : "") +
+      '><span class="nav-ico">' +
+      ico(iconName) +
+      "</span>" +
+      esc(label) +
+      "</a>"
+    );
+  }
+
   function buildNav(active) {
     var mount = document.getElementById("site-nav");
     if (!mount) return Promise.resolve();
-    return SQStore.getBoards().then(function (boards) {
+    return Promise.all([SQStore.getBoards(), SQStore.getSite()]).then(function (
+      res
+    ) {
+      var boards = res[0],
+        site = res[1] || {};
+      var brand = Array.isArray(site.title)
+        ? site.title.join(" ")
+        : site.title || "ARCADE";
+
       var links = boards
         .map(function (b) {
           var href =
             b.id === "home"
               ? root + "index.html"
               : root + "board.html?board=" + encodeURIComponent(b.id);
-          var cls = b.id === active ? ' class="is-active"' : "";
-          return (
-            '<a href="' +
-            esc(href) +
-            '"' +
-            cls +
-            '><span class="nav-ico">' +
-            esc(b.icon || "·") +
-            "</span>" +
-            esc(b.name) +
-            "</a>"
-          );
+          return navLink(href, b.icon, b.name, b.id === active);
         })
         .join("");
 
       mount.innerHTML =
-        '<div class="nav-links">' + links + "</div>" + navTools();
+        '<a class="nav-brand" href="' +
+        root +
+        'index.html">' +
+        esc(brand) +
+        "</a>" +
+        '<div><p class="nav-section">카테고리</p><nav class="nav-links">' +
+        links +
+        "</nav></div>" +
+        navTools();
 
       bindNavTools();
     });
   }
 
+  // 카테고리 아래: 스킨 · 글쓰기 · 회원 · 로그인
   function navTools() {
     var loggedIn = auth() && SQAuth.isLoggedIn();
-    var html = '<span class="nav-tools">';
+    var t = '<div class="nav-tools">';
     if (loggedIn) {
       var u = SQAuth.current();
-      // 글쓰기: 회원 이상
-      if (hasPerm("writeMember"))
-        html += '<a href="' + root + 'write.html">＋ 글쓰기</a>';
-      // 스킨: 사이트 관리 권한
       if (hasPerm("manageSite"))
-        html += '<a href="' + root + 'editor.html">⚙ 스킨</a>';
-      // 회원관리: 최고 관리자
+        t += navLink(root + "editor.html", "palette", "스킨");
+      if (hasPerm("writeMember"))
+        t += navLink(root + "write.html", "pencil", "글쓰기");
       if (hasPerm("manageUsers"))
-        html += '<a href="' + root + 'editor.html#users">👥 회원</a>';
-      html +=
-        '<a href="' +
-        root +
-        'account.html" class="nav-user" title="' +
-        esc(SQAuth.ROLE_LABEL[u.role] || "") +
-        '">' +
-        esc(u.displayName) +
-        "</a>";
-      html += '<button type="button" id="logout-btn" class="nav-lock" title="로그아웃">⏻</button>';
+        t += navLink(root + "editor.html#users", "users", "회원");
+      t += navLink(root + "account.html", "user", u.displayName, false, "nav-user");
+      t +=
+        '<button type="button" id="logout-btn" class="nav-logout"><span class="nav-ico">' +
+        ico("lock") +
+        "</span>로그아웃</button>";
     } else {
-      html += '<a href="' + root + 'account.html">로그인</a>';
+      t += navLink(root + "account.html", "user", "로그인");
     }
-    html += "</span>";
-    return html;
+    t += "</div>";
+    return t;
   }
 
   function bindNavTools() {
@@ -114,6 +133,26 @@
         SQAuth.logout();
         location.reload();
       });
+  }
+
+  /* 모바일 사이드바 토글 + 스크림 주입 */
+  function initNavToggle() {
+    if (document.getElementById("nav-toggle")) return;
+    var btn = document.createElement("button");
+    btn.id = "nav-toggle";
+    btn.className = "nav-toggle";
+    btn.setAttribute("aria-label", "메뉴");
+    btn.innerHTML = "☰";
+    var scrim = document.createElement("div");
+    scrim.className = "nav-scrim";
+    document.body.appendChild(btn);
+    document.body.appendChild(scrim);
+    btn.addEventListener("click", function () {
+      document.body.classList.toggle("nav-open");
+    });
+    scrim.addEventListener("click", function () {
+      document.body.classList.remove("nav-open");
+    });
   }
 
   /* ---------- 공통 UI ---------- */
@@ -152,6 +191,7 @@
       .then(function () {
         applyPerms();
         initScrollTop();
+        initNavToggle();
       })
       .catch(function () {})
       .then(function () {
